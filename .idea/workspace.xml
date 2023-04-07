@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="82a94c48-b500-4f40-aea9-56cbefd39c8d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AP.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/BookScrabbleHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/ClientHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/DictionaryManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/MainTrain.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/MyServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/RunClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/RunServer.java" afterDir="false" />
+    <list default="true" id="82a94c48-b500-4f40-aea9-56cbefd39c8d" name="Changes" comment="040723 - first commit">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/MyServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/MyServer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,14 +29,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "settings.editor.selected.configurable": "configurable.group.build"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.build&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\ariel\IdeaProjects\AP\src" />
@@ -77,6 +65,14 @@
       <option name="presentableId" value="Default" />
       <updated>1680617239952</updated>
     </task>
+    <task id="LOCAL-00001" summary="040723 - first commit">
+      <created>1680890125258</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1680890125258</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -89,6 +85,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="040723 - first commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="040723 - first commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
