@@ -23,17 +23,17 @@ public class BookScrabbleHandler implements ClientHandler{
         String[] parseText = text.split(",");
         String command = parseText[0];
         String[] args = new String[parseText.length - 1];
+        boolean res;
         for(int i = 1;i<parseText.length;i++) {
             args[i-1] = parseText[i];
         }
         if (command.equals("Q"))
-            dm.query(args);
+            res = dm.query(args);
         else if(command.equals("C"))
-            dm.query(args);
+            res = dm.query(args);
         else
-            System.out.println("wrong argument");
-
-        out.println(new StringBuilder(text).reverse().toString());
+            res = false;
+        out.println(res);
         out.flush();
     }
 

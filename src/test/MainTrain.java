@@ -1,7 +1,5 @@
 package test;
 
-import javax.management.StringValueExp;
-import java.beans.Expression;
 import java.io.*;
 import java.net.Socket;
 import java.util.Random;
@@ -141,7 +139,7 @@ public class MainTrain {
 			out.flush();
 			String res=in.next();
 			if((result && !res.equals("true")) || (!result && !res.equals("false")))
-			//	System.out.println("problem getting the right answer from the server (-10)");
+				System.out.println("problem getting the right answer from the server (-10)");
 			in.close();
 			out.close();
 			server.close();
