@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="82a94c48-b500-4f40-aea9-56cbefd39c8d" name="Changes" comment="040723 - first commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/DictionaryManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/DictionaryManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/BookScrabbleHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/BookScrabbleHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/MainTrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/MainTrain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +52,20 @@
       <recent name="C:\Users\ariel\IdeaProjects\AP\src" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.MainTrain">
+    <configuration name="MainTrain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="test.MainTrain" />
+      <module name="AP" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="test.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="RunClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.RunClient" />
       <module name="AP" />
@@ -61,6 +75,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainTrain" />
         <item itemvalue="Application.RunClient" />
       </list>
     </recent_temporary>
@@ -75,7 +90,7 @@
       <updated>1680617239952</updated>
       <workItem from="1680941469628" duration="1000" />
       <workItem from="1680941497239" duration="539000" />
-      <workItem from="1680942061460" duration="11451000" />
+      <workItem from="1680942061460" duration="18256000" />
     </task>
     <task id="LOCAL-00001" summary="040723 - first commit">
       <created>1680890125258</created>
@@ -108,11 +123,6 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/BookScrabbleHandler.java</url>
-          <line>4</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/test/RunServer.java</url>
           <line>73</line>
