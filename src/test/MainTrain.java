@@ -1,9 +1,6 @@
 package test;
 
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
@@ -108,48 +105,48 @@ public class MainTrain {
         return txt;
     }
 
-//	public static void testDM() {
-//		String t1[]=writeFile("t1.txt");
-//		String t2[]=writeFile("t2.txt");
-//		String t3[]=writeFile("t3.txt");
-//
-//		test.DictionaryManager dm=test.DictionaryManager.get();
-//
-//		if(!dm.query("t1.txt","t2.txt",t2[4]))
-//			System.out.println("problem for Dictionary Manager query (-5)");
-//		if(!dm.query("t1.txt","t2.txt",t1[9]))
-//			System.out.println("problem for Dictionary Manager query (-5)");
-//		if(dm.query("t1.txt","t3.txt","2"+t3[2]))
-//			System.out.println("problem for Dictionary Manager query (-5)");
-//		if(dm.query("t2.txt","t3.txt","3"+t2[5]))
-//			System.out.println("problem for Dictionary Manager query (-5)");
-//		if(!dm.challenge("t1.txt","t2.txt","t3.txt",t3[2]))
-//			System.out.println("problem for Dictionary Manager challenge (-5)");
-//		if(dm.challenge("t2.txt","t3.txt","t1.txt","3"+t2[5]))
-//			System.out.println("problem for Dictionary Manager challenge (-5)");
-//
-//		if(dm.getSize()!=3)
-//			System.out.println("wrong size for the Dictionary Manager (-10)");
-//
-//	}
-//
-//	public static void runClient(int port,String query,boolean result) {
-//		try {
-//			Socket server=new Socket("localhost",port);
-//			PrintWriter out=new PrintWriter(server.getOutputStream());
-//			Scanner in=new Scanner(server.getInputStream());
-//			out.println(query);
-//			out.flush();
-//			String res=in.next();
-//			if((result && !res.equals("true")) || (!result && !res.equals("false")))
-//				System.out.println("problem getting the right answer from the server (-10)");
-//			in.close();
-//			out.close();
-//			server.close();
-//		} catch (IOException e) {
-//			System.out.println("your code ran into an IOException (-10)");
-//		}
-//	}
+	public static void testDM() {
+		String t1[]=writeFile("t1.txt");
+		String t2[]=writeFile("t2.txt");
+		String t3[]=writeFile("t3.txt");
+
+		test.DictionaryManager dm=test.DictionaryManager.get();
+
+		if(!dm.query("t1.txt","t2.txt",t2[4]))
+			System.out.println("problem for Dictionary Manager query (-5)");
+		if(!dm.query("t1.txt","t2.txt",t1[9]))
+			System.out.println("problem for Dictionary Manager query (-5)");
+		if(dm.query("t1.txt","t3.txt","2"+t3[2]))
+			System.out.println("problem for Dictionary Manager query (-5)");
+		if(dm.query("t2.txt","t3.txt","3"+t2[5]))
+			System.out.println("problem for Dictionary Manager query (-5)");
+		if(!dm.challenge("t1.txt","t2.txt","t3.txt",t3[2]))
+			System.out.println("problem for Dictionary Manager challenge (-5)");
+		if(dm.challenge("t2.txt","t3.txt","t1.txt","3"+t2[5]))
+			System.out.println("problem for Dictionary Manager challenge (-5)");
+
+		if(dm.getSize()!=3)
+			System.out.println("wrong size for the Dictionary Manager (-10)");
+
+	}
+
+	public static void runClient(int port,String query,boolean result) {
+		try {
+			Socket server=new Socket("localhost",port);
+			PrintWriter out=new PrintWriter(server.getOutputStream());
+			Scanner in=new Scanner(server.getInputStream());
+			out.println(query);
+			out.flush();
+			String res=in.next();
+			if((result && !res.equals("true")) || (!result && !res.equals("false")))
+				System.out.println("problem getting the right answer from the server (-10)");
+			in.close();
+			out.close();
+			server.close();
+		} catch (IOException e) {
+			System.out.println("your code ran into an IOException (-10)");
+		}
+	}
 //
 //	public static void testBSCH() {
 //		String s1[]=writeFile("s1.txt");
@@ -171,7 +168,7 @@ public class MainTrain {
 	public static void main(String[] args) {
 		if(testServer()) {
 			testDM();
-			testBSCH();
+			//testBSCH();
 		}
 		System.out.println("done");
 	}
