@@ -7,7 +7,6 @@
     <list default="true" id="82a94c48-b500-4f40-aea9-56cbefd39c8d" name="Changes" comment="040723 - first commit">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/BookScrabbleHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/BookScrabbleHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/MainTrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/MainTrain.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +89,7 @@
       <updated>1680617239952</updated>
       <workItem from="1680941469628" duration="1000" />
       <workItem from="1680941497239" duration="539000" />
-      <workItem from="1680942061460" duration="20792000" />
+      <workItem from="1680942061460" duration="21233000" />
     </task>
     <task id="LOCAL-00001" summary="040723 - first commit">
       <created>1680890125258</created>

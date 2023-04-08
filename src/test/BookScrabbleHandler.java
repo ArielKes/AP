@@ -15,24 +15,25 @@ public class BookScrabbleHandler implements ClientHandler{
         dm = DictionaryManager.get();
     }
 
+    private boolean DictionaryManagerQuestion(String input){
+        String[] parseInput = input.split(",");
+        String command = parseInput[0];
+        String[] args = new String[parseInput.length - 1];
+        for(int i = 1;i < parseInput.length;i++) {
+            args[i-1] = parseInput[i];
+        }
+        if (command.equals("Q"))
+            return dm.query(args);
+        else if(command.equals("C"))
+            return dm.query(args);
+        return false;
+    }
+
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient) {
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
-        String text = in.next();
-        String[] parseText = text.split(",");
-        String command = parseText[0];
-        String[] args = new String[parseText.length - 1];
-        boolean res;
-        for(int i = 1;i<parseText.length;i++) {
-            args[i-1] = parseText[i];
-        }
-        if (command.equals("Q"))
-            res = dm.query(args);
-        else if(command.equals("C"))
-            res = dm.query(args);
-        else
-            res = false;
+        boolean res = DictionaryManagerQuestion(in.next());
         out.println(res);
         out.flush();
     }
