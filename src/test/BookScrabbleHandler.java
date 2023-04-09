@@ -25,7 +25,7 @@ public class BookScrabbleHandler implements ClientHandler{
         if (command.equals("Q"))
             return dm.query(args);
         else if(command.equals("C"))
-            return dm.query(args);
+            return dm.challenge(args);
         return false;
     }
 
