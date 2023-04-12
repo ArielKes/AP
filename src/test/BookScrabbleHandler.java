@@ -15,17 +15,28 @@ public class BookScrabbleHandler implements ClientHandler{
         dm = DictionaryManager.get();
     }
 
-    private boolean DictionaryManagerQuestion(String input){
+    private boolean DictionaryManagerHandler(String input){
+        //get input as string of args with "," as separators
+        //for example: input:"command, text file 1, ..., text file i, question for the dictionary"
         String[] parseInput = input.split(",");
+
+        //the first arg in the input is command to the Dictionary Manager
         String command = parseInput[0];
+
+        //the other args from the input souled be passed down to the
+        //Dictionary Manager for it to use
         String[] args = new String[parseInput.length - 1];
         for(int i = 1;i < parseInput.length;i++) {
             args[i-1] = parseInput[i];
         }
+
+        //here we use the command to decide what the Dictionary Manager will do
         if (command.equals("Q"))
             return dm.query(args);
         else if(command.equals("C"))
             return dm.challenge(args);
+        //if for some reason the command is not Q, or C as we acspected the
+        //function will return 'false'
         return false;
     }
 
@@ -33,13 +44,14 @@ public class BookScrabbleHandler implements ClientHandler{
     public void handleClient(InputStream inFromclient, OutputStream outToClient) {
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
-        boolean res = DictionaryManagerQuestion(in.next());
+        boolean res = DictionaryManagerHandler(in.next());
         out.println(res);
         out.flush();
     }
 
     @Override
     public void close() {
+        dm.closeLibrary();
         in.close();
         out.close();
     }
