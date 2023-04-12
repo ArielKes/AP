@@ -127,7 +127,7 @@ public class MainTrain {
 
 		if(dm.getSize()!=3)
 			System.out.println("wrong size for the Dictionary Manager (-10)");
-
+        dm.CloseLibrary();
 	}
 
 	public static void runClient(int port,String query,boolean result) {
@@ -166,11 +166,15 @@ public class MainTrain {
 	}
 
 	public static void main(String[] args) {
-		if(testServer()) {
+        System.out.println(Thread.activeCount());
+        testServer();
+        if(testServer()) {
 			testDM();
 			testBSCH();
 		}
 		System.out.println("done");
+        System.out.println(Thread.activeCount());
+
 	}
 
 }
