@@ -1,4 +1,4 @@
-package test;
+package game_src;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
