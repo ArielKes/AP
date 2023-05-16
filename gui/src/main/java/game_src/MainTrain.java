@@ -110,7 +110,7 @@ public class MainTrain {
 		String t2[]=writeFile("t2.txt");
 		String t3[]=writeFile("t3.txt");
 
-		test.DictionaryManager dm=test.DictionaryManager.get();
+		game_src.DictionaryManager dm=game_src.DictionaryManager.get();
 
 		if(!dm.query("t1.txt","t2.txt",t2[4]))
 			System.out.println("problem for Dictionary Manager query (-5)");
@@ -154,7 +154,7 @@ public class MainTrain {
 
 		Random r=new Random();
 		int port=6000+r.nextInt(1000);
-		test.MyServer s=new test.MyServer(port, new BookScrabbleHandler(),1);
+        game_src.MyServer s=new game_src.MyServer(port, new BookScrabbleHandler(),1);
 		s.start();
 		runClient(port, "Q,s1.txt,s2.txt,"+s1[1], true);
 		runClient(port, "Q,s1.txt,s2.txt,"+s2[4], true);
