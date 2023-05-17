@@ -1,7 +1,6 @@
 package game_src;
 
 import java.util.HashMap;
-import java.util.function.Function;
 
 public class DictionaryManager {
     //library get Dictionaries as a value and their names as a key
