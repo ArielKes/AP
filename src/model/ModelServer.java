@@ -14,17 +14,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /*
-the model is also a server that accepts clients and handles them, and also a client that
-communicates with the book server.
+this part is in charge of handling clients and be a server.
 */
-public class Model extends Observable{
+public class ModelServer extends Observable{
 
     HashMap<String, String> properties;
     Socket fg;
     PrintWriter out2fg;
     boolean stop;
 
-    public Model(String propertiesFileName){
+    public ModelServer(String propertiesFileName){
         properties = new HashMap<>();
         BufferReader in = new BufferReader(new FileReader(propertiesFileName));
         String line;
