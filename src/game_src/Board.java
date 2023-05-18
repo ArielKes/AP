@@ -119,8 +119,8 @@ public class Board {
 		return true;
 	}
 	
-	public boolean dictionaryLegal(Word w) {
-		return  true;
+	public boolean dictionaryLegal(DictionaryManager dm,Word w) {
+		return  dm.query(w.toString());
 	}
 	
 	
@@ -206,9 +206,9 @@ public class Board {
 		return sum;
 
 	}
-	
-	public int tryPlaceWord(Word w) {
-		
+
+	public int tryPlaceWord(DictionaryManager dm,Word w) {
+
 		Tile[] ts = w.getTiles();
 		int row=w.getRow();
 		int col=w.getCol();
@@ -217,18 +217,18 @@ public class Board {
 				ts[i]=tiles[row][col];
 			if(w.isVertical()) row++; else col++;
 		}
-		
-		Word test=new Word(ts, w.getRow(), w.getCol(), w.isVertical()); 
-		
-		int sum=0;				
+
+		Word test=new Word(ts, w.getRow(), w.getCol(), w.isVertical());
+
+		int sum=0;
 		if(boardLegal(test) ) {
 			ArrayList<Word> newWords=getWords(test);
-			for(Word nw : newWords) {				
-				if(dictionaryLegal(nw))
+			for(Word nw : newWords) {
+				if(dictionaryLegal(dm,nw))
 					sum+=getScore(nw);
 				else
 					return 0;
-			}			
+			}
 		}
 
 		// the placement

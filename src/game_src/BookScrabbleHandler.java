@@ -10,9 +10,11 @@ public class BookScrabbleHandler implements ClientHandler{
     PrintWriter out;
     Scanner in;
     DictionaryManager dm;
+    Board board;
 
     public BookScrabbleHandler(){
         dm = DictionaryManager.get();
+        board = new Board();
     }
 
     private boolean DictionaryManagerHandler(String input){
