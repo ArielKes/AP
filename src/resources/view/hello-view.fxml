@@ -1,16 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="view.HelloController">
-  <padding>
-    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-  </padding>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import view.BoardDisplayer?>
 
-  <Label fx:id="welcomeText"/>
-  <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.HelloController">
+   <top>
+      <MenuBar BorderPane.alignment="CENTER">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="open" />
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <bottom>
+      <HBox spacing="5.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="status" />
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </BorderPane.margin>
+      </HBox>
+   </bottom>
+   <left>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <VBox spacing="2.0">
+               <children>
+                  <Button fx:id="A" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="A" />
+                  <Button fx:id="B" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="B" />
+                  <Button fx:id="C" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="C" />
+                  <Button fx:id="D" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="D" />
+                  <Button fx:id="E" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="E" />
+                  <Button fx:id="F" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="F" />
+                  <Button fx:id="G" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="G" />
+                  <Button fx:id="H" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="H" />
+                  <Button fx:id="I" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="I" />
+                  <Button fx:id="J" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="J" />
+                  <Button fx:id="K" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="K" />
+                  <Button fx:id="L" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="L" />
+                  <Button fx:id="M" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="M" />
+               </children>
+            </VBox>
+            <VBox spacing="2.0">
+               <children>
+                  <Button fx:id="N" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="N" />
+                  <Button fx:id="O" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="O" />
+                  <Button fx:id="P" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="P" />
+                  <Button fx:id="Q" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Q" />
+                  <Button fx:id="R" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="R" />
+                  <Button fx:id="S" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="S" />
+                  <Button fx:id="T" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="T" />
+                  <Button fx:id="U" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="U" />
+                  <Button fx:id="V" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="V" />
+                  <Button fx:id="W" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="W" />
+                  <Button fx:id="X" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="X" />
+                  <Button fx:id="Y" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Y" />
+                  <Button fx:id="Z" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Z" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </left>
+   <center>
+      <BoardDisplayer fx:id="boardDisplayer" height="300.0" width="300.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
