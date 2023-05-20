@@ -1,13 +1,19 @@
 package view;
 
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import java.net.URL;
+import java.util.ResourceBundle;
+import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ResourceBundle;
 
 public class HelloController implements Initializable {
     @FXML
@@ -62,44 +68,37 @@ public class HelloController implements Initializable {
     private Button Y;
     @FXML
     private Button Z;
+    @FXML
+    private Button delete;
     private ArrayList<Button> buttons;
 
     @FXML
-    BoardDisplayer boardDisplayer = new BoardDisplayer();
+    private GridPane gridPane;
 
-    int[][] board={
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,0,1,1,1,0,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,0,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,0,1,1,1,1,0,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,0,1,1,1,1,1,1,0,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,0,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,0,1,1},
-            {1,1,1,1,1,0,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,0,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,0,1,0,0,0,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-    };
-    private boolean choseLatter;
-    private String latter;
+    private int gridSize = 15;
+
+    private boolean letterChosen = false;
+    private Text letter;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z));
+        buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,delete));
 
         buttons.forEach(button ->{
             setupButton(button);
             button.setFocusTraversable(false);
         });
-        choseLatter = false;
-        latter = new String();
-        boardDisplayer.setBoardData(board);
+        //initialize gridPane
+        gridPane.setGridLinesVisible(true);
+        for (int row = 0; row < 15; row++) {
+            for (int col = 0; col < 15; col++) {
+                Text t = new Text(40, 30, "");
+                Rectangle r = new Rectangle(38, 30);
+                r.setFill(Color.WHITE);
+                StackPane pane = new StackPane(r, t);
+                pane.setOnMouseClicked(this::handleMouseClick);
+                gridPane.add(pane, col, row);
+            }
+        }
     }
 
     private void setupButton(Button button) {
@@ -110,15 +109,35 @@ public class HelloController implements Initializable {
         });
     }
 
+    private void handleMouseClick(Event event) {
+        if (letterChosen){
+            // write letter to text
+            StackPane pane = (StackPane) event.getSource();
+            Text text = (Text) pane.getChildren().get(1);
+            if (text.getText().equals("") || letter.getText().equals(""))  {
+                text.setText(letter.getText());
+
+                // reset letter
+                letterChosen = false;
+            }
+        }
+    }
+
     public void resetButtonsView(Button button){
         for(Button b:buttons){
             b.setDisable(false);
         }
     }
     public void setPlayerChoice(Button button){
-        latter = button.getText();
-        if (latter.length() > 1)
-            latter = null;
-        choseLatter = true;
+        // get the letter from the clicked button
+        letter = new Text(button.getText());
+        letterChosen = true;
+    }
+
+    public void changeColor(int row, int col, Color color){
+        StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
+        Rectangle r = (Rectangle) pane.getChildren().get(0);
+        r.setFill(color);
+
     }
 }
