@@ -1,20 +1,14 @@
 package model;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import game_src.ClientHandler;
-import game_src.DictionaryManager;
-import game_src.MyServer;
 
 
 public class GameHost {
@@ -25,7 +19,7 @@ public class GameHost {
     private static final int MAX_PLAYERS = 5;
     HashMap<String, String> properties;
     Socket bookServerSocket;
-    ServerSocket hostServerSocket;
+    //ServerSocket hostServerSocket;
     int currentPlayerCount ;
     volatile boolean stop = false;
     ThreadPoolExecutor threadPool;
@@ -59,7 +53,7 @@ public class GameHost {
                                 // create a new instance of the client handler
                                 ClientHandler ch = new GameClientHandler();
                                 // handle the client
-                                ch.handleClient(aClient.getInputStream(), aClient.getOutputStream());
+                                ch.handleClient(aClient.getInputStream(), aClient.getOutputStream(), bookServerSocket);
                                 // close the client handler
                                 aClient.close();
                                 ch.close();
