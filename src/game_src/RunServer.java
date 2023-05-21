@@ -1,6 +1,7 @@
 package game_src;
 
 import java.io.*;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class RunServer {
@@ -29,6 +30,11 @@ public class RunServer {
         }
 
         @Override
+        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
+
+        }
+
+        @Override
         public void close() {
             try {
                 in.close();
@@ -51,6 +57,11 @@ public class RunServer {
             String text = in.next();
             out.println(new StringBuilder(text).reverse());
             out.flush();
+        }
+
+        @Override
+        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
+
         }
 
         @Override

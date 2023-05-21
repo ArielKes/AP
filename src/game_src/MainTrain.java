@@ -21,6 +21,11 @@ public class MainTrain {
         }
 
         @Override
+        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
+
+        }
+
+        @Override
         public void close() {
             in.close();
             out.close();

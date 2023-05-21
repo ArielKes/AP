@@ -4,6 +4,7 @@ package game_src;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class BookScrabbleHandler implements ClientHandler{
@@ -47,6 +48,11 @@ public class BookScrabbleHandler implements ClientHandler{
         boolean res = DictionaryManagerHandler(in.next());
         out.println(res);
         out.flush();
+    }
+
+    @Override
+    public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
+
     }
 
     @Override
