@@ -31,7 +31,13 @@ public class GameClientHandler implements ClientHandler{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        a.println(in);
+        String line = null;
+        if (in.hasNext()) {
+            line = in.nextLine();
+            System.out.println(line);
+        }
+        a.println(line);
+        System.out.println("host printing "+line);
         out.println();
         out.flush();
     }

@@ -7,18 +7,23 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 
+import static java.lang.Thread.sleep;
+
 public class dummyA {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
         game_src.MyServer s=new game_src.MyServer(getBookPort("src/resources/properties.txt"), new BookScrabbleHandler(),1);
         s.start();
+        sleep(1000);
         GameHost g = new GameHost("src/resources/properties.txt");
         g.start();
+        sleep(1000);
         GameClient c = new GameClient();
         c.runClient();
 
-        System.out.println("done");
+        while(1==1){}
+        //System.out.println("done");
     }
 
     public static int getBookPort(String propertiesFileName) throws IOException {

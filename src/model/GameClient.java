@@ -20,7 +20,7 @@ public class GameClient {
 
     public void runClient() throws IOException {
         out = new PrintWriter(hs.getOutputStream());
-        out.println("hey there i am client 1!");
+        out.println("Q:moshe");
     }
 
     Socket getGameHostSocket() throws IOException {

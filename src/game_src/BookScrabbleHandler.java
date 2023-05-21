@@ -20,7 +20,7 @@ public class BookScrabbleHandler implements ClientHandler{
         //get input as string of args with "," as separators
         //for example: input:"command, text file 1, ..., text file i, question for the dictionary"
         String[] parseInput = input.split(",");
-
+        System.out.println("gameServer printing "+in);
         //the first arg in the input is command to the Dictionary Manager
         String command = parseInput[0];
 
