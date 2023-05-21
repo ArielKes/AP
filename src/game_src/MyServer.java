@@ -41,7 +41,7 @@ public class MyServer {
                             Class<? extends ClientHandler> chClass = this.chInstance.getClass();
                             ClientHandler ch = chClass.getDeclaredConstructor().newInstance();
                             // handle the client
-                            ch.handleClient(aClient.getInputStream(), aClient.getOutputStream());
+                            ch.handle(aClient.getInputStream(), aClient.getOutputStream());
                             // close the client handler
                             aClient.close();
                             ch.close();

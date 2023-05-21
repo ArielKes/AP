@@ -1,4 +1,7 @@
-package game_src;
+package tests;
+
+import game_src.ClientHandler;
+import game_src.MyServer;
 
 import java.io.*;
 import java.util.Scanner;
@@ -9,7 +12,7 @@ public class RunServer {
         PrintWriter out;
 
         @Override
-        public void handleClient(InputStream inFromClient, OutputStream outToClient) {
+        public void handle(InputStream inFromClient, OutputStream outToClient) {
             try {
                 in = new BufferedReader(new InputStreamReader(inFromClient));
                 out = new PrintWriter(outToClient, true);
@@ -45,7 +48,7 @@ public class RunServer {
         Scanner in;
 
         @Override
-        public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+        public void handle(InputStream inFromclient, OutputStream outToClient) {
             out = new PrintWriter(outToClient);
             in = new Scanner(inFromclient);
             String text = in.next();

@@ -1,4 +1,8 @@
-package game_src;
+package tests;
+
+import game_src.BookScrabbleHandler;
+import game_src.ClientHandler;
+import game_src.MyServer;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,7 +16,7 @@ public class MainTrain {
         Scanner in;
 
         @Override
-        public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+        public void handle(InputStream inFromclient, OutputStream outToClient) {
             out = new PrintWriter(outToClient);
             in = new Scanner(inFromclient);
             String text = in.next();

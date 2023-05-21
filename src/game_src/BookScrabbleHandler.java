@@ -43,7 +43,7 @@ public class BookScrabbleHandler implements ClientHandler{
     }
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+    public void handle(InputStream inFromclient, OutputStream outToClient) {
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
         boolean res = DictionaryManagerHandler(in.next());

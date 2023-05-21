@@ -1,4 +1,4 @@
-package game_src;
+package tests;
 
 import java.io.PrintWriter;
 import java.net.Socket;
