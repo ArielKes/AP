@@ -21,6 +21,7 @@ public class GameClient {
     public void runClient() throws IOException {
         out = new PrintWriter(hs.getOutputStream());
         out.println("Q:moshe");
+        out.flush();
     }
 
     Socket getGameHostSocket() throws IOException {

@@ -14,6 +14,12 @@ public class GameClientHandler implements ClientHandler{
 
     PrintWriter out;
     Scanner in;
+    //static int i;
+    boolean hasSocket;
+
+    public GameClientHandler(){
+        hasSocket = false;
+    }
 
 
     @Override
@@ -23,6 +29,12 @@ public class GameClientHandler implements ClientHandler{
 
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket gameServer) {
+
+        if(!hasSocket){
+            hasSocket = true;
+            return;
+        }
+
         out = new PrintWriter(outToClient);//writing to client
         in = new Scanner(inFromclient);//receiving from client
         PrintWriter a = null;
@@ -44,7 +56,11 @@ public class GameClientHandler implements ClientHandler{
 
     @Override
     public void close() {
-        in.close();
-        out.close();
+        if(in!=null) {
+            in.close();
+        }
+        if(out!=null) {
+            out.close();
+        }
     }
 }
