@@ -49,9 +49,10 @@ public class GameClientHandler implements ClientHandler{
             System.out.println(line);
         }
         a.println(line);
-        System.out.println("host printing "+line);
-        out.println();
-        out.flush();
+        a.flush();
+        //System.out.println("host printing "+line);
+        //out.println();
+        //out.flush();
     }
 
     @Override
