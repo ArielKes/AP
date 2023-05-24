@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -14,28 +15,24 @@ import game_src.ClientHandler;
 
 public class GameHost {
 
-    /*
-    this is the server!
-    */
     private static final int MAX_PLAYERS = 5;
-    HashMap<String, String> properties;
-    Socket bookServerSocket;
-    //ServerSocket hostServerSocket;
-    int currentPlayerCount ;
-    volatile boolean stop = false;
-    ThreadPoolExecutor threadPool;
-    HashMap<Integer, Socket> clients;
-    ServerSocket hostServerSocket;
-    HashMap<Socket, ClientHandler> handlers;
+    private final HashMap<String, String> properties;
+    private final Socket bookServerSocket;
+    private final ThreadPoolExecutor threadPool;
+    private final HashMap<Integer, Socket> clients;
+    private final HashMap<Socket, ClientHandler> handlers;
+    private volatile boolean stop = false;
+    private ServerSocket hostServerSocket;
+    int currentPlayerCount;
 
     public GameHost(String propertiesFileName) throws IOException {
         this.properties = getProperties(propertiesFileName);
         this.bookServerSocket = getBookServerSocket();
-        currentPlayerCount = 0;
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_PLAYERS);
         this.clients = new HashMap<>();
         this.hostServerSocket = null;
         this.handlers = new HashMap<>();
+        currentPlayerCount = 0;
     }
 
     public void start() {
@@ -45,22 +42,22 @@ public class GameHost {
         new Thread(this::handleClients).start();
     }
 
-    private void acceptClients(){
+    private void acceptClients() {
         try {
             hostServerSocket.setSoTimeout(1000);
             while (!stop) {
                 if (currentPlayerCount < MAX_PLAYERS) {
                     try {
                         connectNewClient();
-                    } catch (IOException e) {e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                     threadPool.execute(() -> {
                         try {
+                            Socket clientSocket = clients.get(currentPlayerCount - 1);
                             ClientHandler ch = new GameClientHandler();
-                            ch.handleClient(clients.get(currentPlayerCount-1).getInputStream(), clients.get(currentPlayerCount-1).getOutputStream(), bookServerSocket);
-                            handlers.put(clients.get(currentPlayerCount-1),ch);
-                            //clients.get(currentPlayerCount-1).close();
-                            //ch.close();
+                            ch.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
+                            handlers.put(clientSocket, ch);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -71,30 +68,42 @@ public class GameHost {
         }
 
         lastCall();
-
     }
 
     private void handleClients() {
-
+        while (!stop) {
+            for (Map.Entry<Socket, ClientHandler> entry : handlers.entrySet()) {
+                Socket clientSocket = entry.getKey();
+                ClientHandler clientHandler = entry.getValue();
+                try {
+                    if (clientSocket.getInputStream().available() > 0) {
+                        clientHandler.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
-
-    private ServerSocket firstCall(){
+    private ServerSocket firstCall() {
         try {
             int gameHostPort = Integer.parseInt(this.properties.get("game_host.port"));
-
+            ServerSocket serverSocket = new ServerSocket(gameHostPort);
             System.out.println("Server started. Listening on port " + gameHostPort);
-            return new ServerSocket(gameHostPort);
-        }
-        catch (IOException e) {
+            return serverSocket;
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    private void lastCall(){
+    private void lastCall() {
         try {
             hostServerSocket.close();
+            for (Socket clientSocket : clients.values()) {
+                clientSocket.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -102,10 +111,10 @@ public class GameHost {
     }
 
     private void connectNewClient() throws IOException {
-        Socket aClient = hostServerSocket.accept();
-        clients.put(currentPlayerCount,aClient);
+        Socket clientSocket = hostServerSocket.accept();
+        clients.put(currentPlayerCount, clientSocket);
         currentPlayerCount++;
-        System.out.println("New client connected: " + aClient.getInetAddress());
+        System.out.println("New client connected: " + clientSocket.getInetAddress());
     }
 
     public static HashMap<String, String> getProperties(String propertiesFileName) throws IOException {
@@ -125,8 +134,7 @@ public class GameHost {
         return new Socket(this.properties.get("game_server.ip"), port);
     }
 
-    public void close(){
+    public void close() {
         stop = true;
     }
-
 }
