@@ -3,6 +3,7 @@ package model;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
@@ -23,54 +24,88 @@ public class GameHost {
     int currentPlayerCount ;
     volatile boolean stop = false;
     ThreadPoolExecutor threadPool;
+    HashMap<Integer, Socket> clients;
+    ServerSocket hostServerSocket;
+    HashMap<Socket, ClientHandler> handlers;
 
     public GameHost(String propertiesFileName) throws IOException {
         this.properties = getProperties(propertiesFileName);
         this.bookServerSocket = getBookServerSocket();
         currentPlayerCount = 0;
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_PLAYERS);
+        this.clients = new HashMap<>();
+        this.hostServerSocket = null;
+        this.handlers = new HashMap<>();
     }
 
     public void start() {
         stop = false;
-        new Thread(this::startServer).start();
+        hostServerSocket = firstCall();
+        new Thread(this::acceptClients).start();
+        new Thread(this::handleClients).start();
     }
 
-    private void startServer(){
+    private void acceptClients(){
         try {
-            int gameHostPort = Integer.parseInt(this.properties.get("game_host.port"));
-            ServerSocket hostServerSocket = new ServerSocket(gameHostPort);
-            System.out.println("Server started. Listening on port " + gameHostPort);
             hostServerSocket.setSoTimeout(1000);
-            while(!stop){
-                if(currentPlayerCount < MAX_PLAYERS) {
+            while (!stop) {
+                if (currentPlayerCount < MAX_PLAYERS) {
                     try {
-                        currentPlayerCount++;
-                        Socket aClient = hostServerSocket.accept();
-                        System.out.println("New client connected: " + aClient.getInetAddress());
-                        threadPool.execute(() -> {
-                            try {
-                                // create a new instance of the client handler
-                                ClientHandler ch = new GameClientHandler();
-                                // handle the client
-                                ch.handleClient(aClient.getInputStream(), aClient.getOutputStream(), bookServerSocket);
-                                // close the client handler
-                                aClient.close();
-                                ch.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    } catch (SocketTimeoutException ignored) {
+                        connectNewClient();
+                    } catch (IOException e) {e.printStackTrace();
                     }
+                    threadPool.execute(() -> {
+                        try {
+                            ClientHandler ch = new GameClientHandler();
+                            ch.handleClient(clients.get(currentPlayerCount-1).getInputStream(), clients.get(currentPlayerCount-1).getOutputStream(), bookServerSocket);
+                            handlers.put(clients.get(currentPlayerCount-1),ch);
+                            //clients.get(currentPlayerCount-1).close();
+                            //ch.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
             }
-            hostServerSocket.close();
-            threadPool.shutdown();
+        } catch (SocketException ignored) {
+        }
+
+        lastCall();
+
+    }
+
+    private void handleClients() {
+
+    }
+
+
+    private ServerSocket firstCall(){
+        try {
+            int gameHostPort = Integer.parseInt(this.properties.get("game_host.port"));
+
+            System.out.println("Server started. Listening on port " + gameHostPort);
+            return new ServerSocket(gameHostPort);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    private void lastCall(){
+        try {
+            hostServerSocket.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        threadPool.shutdown();
+    }
+
+    private void connectNewClient() throws IOException {
+        Socket aClient = hostServerSocket.accept();
+        clients.put(currentPlayerCount,aClient);
+        currentPlayerCount++;
+        System.out.println("New client connected: " + aClient.getInetAddress());
     }
 
     public static HashMap<String, String> getProperties(String propertiesFileName) throws IOException {

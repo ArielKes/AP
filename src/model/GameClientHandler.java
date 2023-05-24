@@ -31,12 +31,12 @@ public class GameClientHandler implements ClientHandler{
     public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket gameServer) {
 
         if(!hasSocket){
+            out = new PrintWriter(outToClient);//writing to client
+            in = new Scanner(inFromclient);//receiving from client
             hasSocket = true;
             return;
         }
 
-        out = new PrintWriter(outToClient);//writing to client
-        in = new Scanner(inFromclient);//receiving from client
         PrintWriter a = null;
         try {
             a = new PrintWriter(gameServer.getOutputStream());
