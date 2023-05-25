@@ -28,7 +28,7 @@ public class dummyA {
             new Thread(() -> {
                 try {
                     GameClient c = new GameClient();
-                    c.placeWordOnBoard("word");
+                    c.placeWordOnBoard("hello");
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
