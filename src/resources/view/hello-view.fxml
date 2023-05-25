@@ -81,7 +81,7 @@
                   <Button fx:id="X" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="X" />
                   <Button fx:id="Y" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Y" />
                   <Button fx:id="Z" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Z" />
-                  <Button fx:id="delete" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" />
+                  <Button fx:id="delete" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="delete"/>
                </children>
             </VBox>
          </children>

@@ -4,18 +4,17 @@ import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.util.*;
+
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import view_model.ViewModel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-public class HelloController implements Initializable {
+public class HelloController implements Observer,Initializable {
     @FXML
     private Button A;
     @FXML
@@ -79,6 +78,8 @@ public class HelloController implements Initializable {
 
     private boolean letterChosen = false;
     private Text letter;
+
+    ViewModel vm;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,delete));
@@ -138,6 +139,12 @@ public class HelloController implements Initializable {
         StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
         Rectangle r = (Rectangle) pane.getChildren().get(0);
         r.setFill(color);
+
+    }
+
+
+    @Override
+    public void update(Observable o, Object arg) {
 
     }
 }
