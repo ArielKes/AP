@@ -18,7 +18,7 @@ public class GameClient{
     protected final Socket hs;
     private final HashMap<String, String> properties;
 
-    private boolean myTurn = false;
+    private volatile boolean myTurn = false;
     PrintWriter out;
 
     ObjectOutputStream objectOutputStream;
@@ -45,12 +45,7 @@ public class GameClient{
     }
 
 
-    String getBoard() throws IOException, InterruptedException {
-        waitToTurn();
-        this.out.println("get_board#");
-        this.out.flush();
-        return utils.getRespondFromServer(hs);
-    }
+
 
     int placeWordOnBoard(String w) throws IOException, InterruptedException {
         // -1 if word is not valid
@@ -85,7 +80,7 @@ public class GameClient{
 //
 //    }
 
-    synchronized void listenToMyTurn(){
+    void listenToMyTurn(){
         // start new thread to listen to server
         // if server send 'your turn' then set myTurn to true
         // else set myTurn to false
@@ -96,29 +91,25 @@ public class GameClient{
                     System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
                     this.myTurn = true;
                 }
-                while (this.myTurn){
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                }
+//                while (this.myTurn){
+//
+//
+//                }
             }
         });
         clientThread.start();
     }
 
-    synchronized void waitToTurn() throws InterruptedException {
+    void waitToTurn() throws InterruptedException {
         while (!myTurn){
-            //wait(); // waits until other thread calls notify()
-        }
+        }// wait here as long as it is not my turn
         System.out.println("client: start my turn");
 
     }
+
+
+
 }
-
-
 
 
 
