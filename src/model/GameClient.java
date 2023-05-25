@@ -7,6 +7,9 @@ import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.lang.management.ManagementFactory;
+
+import static model.utils.*;
 
 public class GameClient {
     protected final Socket hs;
@@ -20,8 +23,19 @@ public class GameClient {
 
     public void runClient() throws IOException {
         out = new PrintWriter(hs.getOutputStream());
-        out.println("Q:moshe");
+        out.println("hi, I'm client with PID" + utils.getProcessId() );
         out.flush();
+        //wait for server to send 'it your turn'
+        while (true) {
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
+            if (in.readLine().equals("it's your turn")) {
+                System.out.println("client: " + " got the turn");
+                out.println("client" + " is done");
+                out.flush();
+            }
+        }
+
     }
 
     Socket getGameHostSocket() throws IOException {
@@ -42,4 +56,8 @@ public class GameClient {
         return p;
     }
 
+
 }
+
+
+

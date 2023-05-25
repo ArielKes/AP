@@ -19,9 +19,19 @@ public class dummyA {
         GameHost g = new GameHost("src/resources/properties.txt");
         g.start();
         sleep(1000);
-        GameClient c = new GameClient();
-        c.runClient();
-
+//        GameClient c = new GameClient();
+//        c.runClient(1);
+        // create four threads for four clients
+        for (int i = 0; i < 5; i++) {
+            new Thread(() -> {
+                try {
+                    GameClient c = new GameClient();
+                    c.runClient();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
         while(1==1){}
         //System.out.println("done");
     }
