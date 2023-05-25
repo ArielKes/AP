@@ -14,7 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import view_model.ViewModel;
 
-public class HelloController implements Observer,Initializable {
+public class GameController extends BaseController implements Observer,Initializable {
     @FXML
     private Button A;
     @FXML
@@ -142,9 +142,4 @@ public class HelloController implements Observer,Initializable {
 
     }
 
-
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
 }
