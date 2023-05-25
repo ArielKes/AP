@@ -31,20 +31,14 @@ public class GameClient {
         //in = new Scanner(hs.getInputStream());
         //wait for server to send 'it your turn'
         while (true) {
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
-            if (in.readLine().equals("it's your turn")) {
-                System.out.println("client on :"+ Thread.currentThread().getId()+ " got the turn");
-                //todo : here get action from user
-
-
-
-                out.println("client" + " is done");
-                out.flush();
-            }
+            waitToTurn();
+            //todo : here get action from user
+            out.println("client" + " is done");
+            out.flush();
         }
-
     }
+
+
 
     Socket getGameHostSocket() throws IOException {
         assert properties != null;
@@ -52,6 +46,16 @@ public class GameClient {
         return new Socket(properties.get("game_host.ip"), port);
     }
 
+
+    void waitToTurn() throws IOException {
+        while (true){
+            BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
+            if (in.readLine().equals("it's your turn")) {
+                System.out.println("client on :"+ Thread.currentThread().getId()+ " got the turn");
+                break;
+            }
+        }
+    }
 
 
 
