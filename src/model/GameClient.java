@@ -45,7 +45,12 @@ public class GameClient{
     }
 
 
-
+    String getBoard() throws IOException, InterruptedException {
+        waitToTurn();
+        this.out.println("get_board#");
+        this.out.flush();
+        return utils.getRespondFromServer(hs);
+    }
 
     int placeWordOnBoard(String w) throws IOException, InterruptedException {
         // -1 if word is not valid
@@ -80,7 +85,7 @@ public class GameClient{
 //
 //    }
 
-    void listenToMyTurn(){
+    synchronized void listenToMyTurn(){
         // start new thread to listen to server
         // if server send 'your turn' then set myTurn to true
         // else set myTurn to false
@@ -106,7 +111,7 @@ public class GameClient{
 
     synchronized void waitToTurn() throws InterruptedException {
         while (!myTurn){
-            wait(); // waits until other thread calls notify()
+            //wait(); // waits until other thread calls notify()
         }
         System.out.println("client: start my turn");
 
