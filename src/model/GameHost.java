@@ -49,19 +49,26 @@ public class GameHost {
                 if (currentPlayerCount < MAX_PLAYERS) {
                     try {
                         connectNewClient();
-                    } catch (IOException e) {
+                        threadPool.execute(() -> {
+                            try {
+                                Socket clientSocket = clients.get(currentPlayerCount - 1);
+                                ClientHandler ch = new GameClientHandler();
+                                ch.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
+                                handlers.put(clientSocket, ch);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+
+                    }
+                    catch (SocketTimeoutException e) {
+                        // Handle the timeout exception
+                        System.out.println("Accept timeout. No client connected within the specified timeout.");
+                    }
+                    catch (IOException e) {
                         e.printStackTrace();
                     }
-                    threadPool.execute(() -> {
-                        try {
-                            Socket clientSocket = clients.get(currentPlayerCount - 1);
-                            ClientHandler ch = new GameClientHandler();
-                            ch.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
-                            handlers.put(clientSocket, ch);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
+
                 }
             }
         } catch (SocketException ignored) {
