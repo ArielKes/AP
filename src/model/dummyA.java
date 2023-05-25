@@ -13,6 +13,7 @@ public class dummyA {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
+        System.out.println("dummyA pid: "+utils.getProcessId());
         game_src.MyServer s=new game_src.MyServer(getBookPort("src/resources/properties.txt"), new BookScrabbleHandler(),1);
         s.start();
         sleep(1000);
@@ -31,8 +32,12 @@ public class dummyA {
                     e.printStackTrace();
                 }
             }).start();
+
         }
-        while(1==1){}
+        sleep(2000);
+        g.startGame();
+        while(true){
+                   }
         //System.out.println("done");
     }
 

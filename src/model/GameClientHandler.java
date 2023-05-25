@@ -30,29 +30,21 @@ public class GameClientHandler implements ClientHandler{
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket gameServer) {
 
-        if(!hasSocket){
-            out = new PrintWriter(outToClient);//writing to client
-            in = new Scanner(inFromclient);//receiving from client
-            hasSocket = true;
-            return;
+        //send input from client to server and vice versa
+        out = new PrintWriter(outToClient);
+        in = new Scanner(inFromclient);
+        out.println("it's your turn");
+        out.flush();
+        // wait to clinet to send 'client is done'
+        while (true) {
+            if (in.nextLine().equals("client is done")) {
+                System.out.println("Game Host: " + " got the turn");
+                out.println("server" + " is done");
+                out.flush();
+            }
         }
 
-        PrintWriter a = null;
-        try {
-            a = new PrintWriter(gameServer.getOutputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String line = null;
-        if (in.hasNext()) {
-            line = in.nextLine();
-            System.out.println(line);
-        }
-        a.println(line);
-        a.flush();
-        //System.out.println("host printing "+line);
-        //out.println();
-        //out.flush();
+
     }
 
     @Override
