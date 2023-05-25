@@ -35,8 +35,7 @@ public class GameHost {
         this.clients = new HashMap<>();
         this.hostServerSocket = null;
         this.handlers = new ConcurrentHashMap<>();
-
-        currentPlayerCount = 0;
+        this.currentPlayerCount = 0;
     }
 
     public void start() {
@@ -74,13 +73,14 @@ public class GameHost {
 
     private void handleClients() {
         while (!gameOver) {
+            // iterate over clients and handle each one
             for (Map.Entry<Socket, ClientHandler> entry : handlers.entrySet()) {
                 Socket clientSocket = entry.getKey();
                 ClientHandler clientHandler = entry.getValue();
                 try {
                     if (clientSocket.getInputStream().available() > 0) {
-                        System.out.println("Game Host: Handling client: " + entry);
-                        clientHandler.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
+                        System.out.println("Game Host: Handling client: " + entry.getKey());
+                        clientHandler.handleClient(clientSocket, bookServerSocket);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -116,18 +116,12 @@ public class GameHost {
     private void connectNewClient() throws IOException {
         Socket clientSocket = hostServerSocket.accept();
         clients.put(currentPlayerCount, clientSocket);
+        handlers.put(clientSocket, new GameClientHandler());
         currentPlayerCount++;
-        System.out.println("Game Host: New client connected: " + currentPlayerCount);
-        threadPool.execute(() -> {
-            try {
-                ClientHandler ch = new GameClientHandler();
-                ch.handleClient(clientSocket.getInputStream(), clientSocket.getOutputStream(), bookServerSocket);
-                handlers.put(clientSocket, ch);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        System.out.println("Game Host: New client connected: " + clientSocket);
+
     }
+
 
 
 

@@ -35,6 +35,11 @@ public class RunServer {
         }
 
         @Override
+        public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {
+
+        }
+
+        @Override
         public void close() {
             try {
                 in.close();
@@ -61,6 +66,11 @@ public class RunServer {
 
         @Override
         public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
+
+        }
+
+        @Override
+        public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {
 
         }
 

@@ -1,6 +1,9 @@
 package game_src;
 
 
+import model.utils;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -11,9 +14,10 @@ public class BookScrabbleHandler implements ClientHandler{
     PrintWriter out;
     Scanner in;
     DictionaryManager dm;
-
+    Board board;
     public BookScrabbleHandler(){
         dm = DictionaryManager.get();
+        board = new Board();
     }
 
     private boolean DictionaryManagerHandler(String input){
@@ -43,16 +47,27 @@ public class BookScrabbleHandler implements ClientHandler{
 
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+        // get input from client (Game Host) and send it to the Dictionary Manager or the Board
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
-        boolean res = DictionaryManagerHandler(in.next());
-        out.println(res);
-        out.flush();
+        while (true) {
+            String clientRequest = utils.getRespondFromServer(inFromclient);
+            System.out.println("Game Server: client request is - " + clientRequest);
+            out.println("Hi I got your message");
+            out.flush();
+//            boolean res = DictionaryManagerHandler(in.next());
+//            out.println(res);
+//            out.flush();
+        }
     }
 
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
 
+    }
+
+    @Override
+    public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {
     }
 
     @Override

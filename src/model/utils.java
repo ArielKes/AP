@@ -1,9 +1,10 @@
 package model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.management.ManagementFactory;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
 public class utils {
@@ -20,5 +21,40 @@ public class utils {
         }
         in.close();
         return p;
+    }
+
+
+    public static final String getRespondFromServer(Socket hs) {
+
+        String respond = null;
+        while (respond == null){
+            try {
+                hs.setSoTimeout(1000);
+                BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
+                respond = in.readLine();
+                if (respond != null) break;
+            } catch (SocketTimeoutException e) {
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return respond;
+    }
+    public static final String getRespondFromServer(InputStream inFromclient) {
+
+        String respond = null;
+        while (respond == null){
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(inFromclient));
+                respond = in.readLine();
+                if (respond != null) break;
+            } catch (SocketTimeoutException e) {
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return respond;
     }
 }

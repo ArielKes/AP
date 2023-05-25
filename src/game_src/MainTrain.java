@@ -26,6 +26,11 @@ public class MainTrain {
         }
 
         @Override
+        public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {
+
+        }
+
+        @Override
         public void close() {
             in.close();
             out.close();
