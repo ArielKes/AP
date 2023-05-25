@@ -257,4 +257,17 @@ public class Board {
 			System.out.println();
 		}
 	}
+
+	public String get_as_string() {
+		StringBuilder s= new StringBuilder();
+		for(Tile[] ts : tiles) {
+			for(Tile t : ts) {
+				if(t!=null){
+					s.append(t.letter);}
+				else{
+					s.append("_");}
+			}
+		}
+		return s.toString();
+	}
 }

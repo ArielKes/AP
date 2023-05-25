@@ -48,13 +48,28 @@ public class BookScrabbleHandler implements ClientHandler{
     private void parseRequest(String request){
         String[] parseInput = request.split("#");
         String command = parseInput[0];
-        if (command.equals("getBoard")) {
+        if (command.contains("get_board")) {
             send_board();
         }
+        if (command.contains("get_dictionary")) {
+            send_dictionary();
+        }
     }
+    private  void place(String w){
+         int score = board.tryPlaceWord(w);
+            if(score != -1){
+                out.println("score#"+score);
+                out.flush();
+            }
+            else{
+                out.println("not placed#");
+                out.flush();
+            }
 
+    }
     private void send_board(){
-        out.println(board.toString());
+        System.out.println("sending board");
+        out.println(board.get_as_string());
         out.flush();
     }
 
@@ -66,9 +81,9 @@ public class BookScrabbleHandler implements ClientHandler{
         while (true) {
             String clientRequest = utils.getRespondFromServer(inFromclient);
             System.out.println("Game Server: client request is - " + clientRequest);
-
-            out.println("Hi I got your message");
-            out.flush();
+            parseRequest(clientRequest);
+//            out.println("Hi I got your message");
+//            out.flush();
 //            boolean res = DictionaryManagerHandler(in.next());
 //            out.println(res);
 //            out.flush();

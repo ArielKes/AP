@@ -108,7 +108,14 @@ public class GameClient{
     }
 
 
-
+    public void getBoard() throws InterruptedException {
+        waitToTurn();
+        this.out.println("get_board#");
+        this.out.flush();
+        //wait for server to send score
+        String serverRespond = utils.getRespondFromServer(hs);
+        System.out.println("server respond: "+serverRespond);
+    }
 }
 
 
