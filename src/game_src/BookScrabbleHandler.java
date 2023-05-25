@@ -45,6 +45,19 @@ public class BookScrabbleHandler implements ClientHandler{
         return false;
     }
 
+    private void parseRequest(String request){
+        String[] parseInput = request.split("#");
+        String command = parseInput[0];
+        if (command.equals("getBoard")) {
+            send_board();
+        }
+    }
+
+    private void send_board(){
+        out.println(board.toString());
+        out.flush();
+    }
+
     @Override
     public void handleClient(InputStream inFromclient, OutputStream outToClient) {
         // get input from client (Game Host) and send it to the Dictionary Manager or the Board
@@ -53,6 +66,7 @@ public class BookScrabbleHandler implements ClientHandler{
         while (true) {
             String clientRequest = utils.getRespondFromServer(inFromclient);
             System.out.println("Game Server: client request is - " + clientRequest);
+
             out.println("Hi I got your message");
             out.flush();
 //            boolean res = DictionaryManagerHandler(in.next());
