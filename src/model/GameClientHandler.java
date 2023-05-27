@@ -13,11 +13,14 @@ public class GameClientHandler implements ClientHandler{
 
     PrintWriter outToClient,outToGameServer;
     Scanner in;
-    //static int i;
+    Socket clientSocket;
     boolean hasSocket;
 
-    public GameClientHandler(){
+    public GameClientHandler(Socket clientSocket) throws IOException {
         hasSocket = false;
+        outToClient = new PrintWriter(clientSocket.getOutputStream());
+        in = new Scanner(clientSocket.getInputStream());
+        this.clientSocket = new Socket(clientSocket.getInetAddress(), clientSocket.getPort());
     }
 
 
@@ -46,20 +49,29 @@ public class GameClientHandler implements ClientHandler{
             outToGameServer = new PrintWriter(gameServer.getOutputStream());
             outToGameServer.println(clientRequest);
             outToGameServer.flush();
+
             // wait for game server response
             System.out.println("Game Host: waiting for game server response");
             String serverResponse = utils.getRespondFromServer(gameServer);
             System.out.println("Game Host: game server response is: " + serverResponse);
+
             // send game server response to client
             System.out.println("Game Host: sending game server response to client");
             this.outToClient.println(serverResponse);
             this.outToClient.flush();
+
             // check if client is done
-            if (in.nextLine().equals("done#")) {
+            if (in.nextLine().equals("turnEnded#")) {
                 System.out.println("Game Host: client is done, moving to next client");
                 break;
             }
         }
+    }
+
+
+    void sendToClient(String msg){
+        outToClient.println(msg);
+        outToClient.flush();
     }
 
     @Override

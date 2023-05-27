@@ -1,6 +1,7 @@
 package model;
 
 import game_src.BookScrabbleHandler;
+import game_src.Word;
 import model.utilObjects.PlaceWord;
 
 import java.io.BufferedReader;
@@ -24,11 +25,13 @@ public class dummyA {
 //        GameClient c = new GameClient();
 //        c.runClient(1);
         // create four threads for four clients
+
         for (int i = 0; i < 5; i++) {
+            int finalI = i;
             new Thread(() -> {
                 try {
-                    GameClient c = new GameClient();
-                    c.getBoard();
+                    GameClient c = new GameClient(Integer.toString(finalI));
+                    c.placeWordOnBoard(new Word("hello", 0, 0, true));
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
