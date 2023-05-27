@@ -72,17 +72,12 @@ public class GameController extends BaseController implements Observer,Initializ
     }
 
     private void test(Event event) {
-        wordVerifiedDisplay(true, 0, 0, 0, 4);
-        Map<String, Integer> map = new HashMap<>();
-        map.put("A", 1);
-        map.put("B", 3);
-        map.put("C", 3);
-        setScores(map);
+        updateBoardDisplay();
     }
 
     private void setupButton(Button button) {
         button.setOnMouseClicked(mouseEvent -> {
-            resetButtonsView(button);
+            resetButtonsView();
             setPlayerChoice(button);
             button.setDisable(true);
         });
@@ -121,7 +116,7 @@ public class GameController extends BaseController implements Observer,Initializ
         letterChosen = true;
     }
 
-    public void resetChoice(){
+    private void resetChoice(){
         check.set(false);
         word.set("");
         cols.set("");
@@ -152,7 +147,7 @@ public class GameController extends BaseController implements Observer,Initializ
 
 //    ************************************************** API **************************************************
 
-    public void resetButtonsView(Button button){
+    public void resetButtonsView(){
         for(Button b:buttons){
             b.setDisable(false);
         }
@@ -189,6 +184,24 @@ public class GameController extends BaseController implements Observer,Initializ
         System.out.println(vm.model.board.get_as_string());
         resetChoice();
     }
+
+    public void updateBoardDisplay(){
+        String board = vm.model.board.get_as_string();
+        for (int row = 0; row < 15; row++) {
+            for (int col = 0; col < 15; col++) {
+                StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
+                Text text = (Text) pane.getChildren().get(1);
+                char c = board.charAt((row * gridSize) + col);
+                if (c == '_')
+                    text.setText("");
+                else {
+                    text.setText(String.valueOf(c));
+                }
+            }
+        }
+    }
+
+
 
     public void setViewModel(ViewModel vm){
         this.vm = vm;
