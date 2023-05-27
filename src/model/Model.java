@@ -13,6 +13,7 @@ public class Model extends Observable {
     public Model(){
         board = new Board();
         bag = new Tile.Bag();
+
     }
 
     public void tryPlaceWord(String text,int col,int row, boolean vertical) {
@@ -20,8 +21,10 @@ public class Model extends Observable {
         for(int i=0 ; i<text.length() ; i++){
             Arrays.fill(t,this.bag.getTile(text.toCharArray()[i]));
         }
-        Word w = new Word(t ,col ,row ,vertical);//TODO: connect this to VM and Game controller
+        Word w = new Word(t ,col ,row ,vertical);
         int score = this.board.tryPlaceWord(w);
+        setChanged();
+        notifyObservers();
         System.out.println("score:" + score);
     }
 

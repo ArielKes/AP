@@ -40,6 +40,9 @@ public class GameController extends BaseController implements Observer,Initializ
     IntegerProperty col = new SimpleIntegerProperty();
     IntegerProperty row = new SimpleIntegerProperty();
     StringProperty word = new SimpleStringProperty();
+    StringProperty board = new SimpleStringProperty();
+
+    private char tailsArray[][] = new char[15][15];
     private Text letter;
     ViewModel vm;
 
@@ -92,7 +95,7 @@ public class GameController extends BaseController implements Observer,Initializ
             if (text.getText().equals("") || letter.getText().equals(""))  {
                 if(word.get().equals("")){
                     col.set((int)(pane.getLayoutX()/pane.getLayoutBounds().getWidth()));
-                    row.set((int)(pane.getLayoutY()/pane.getLayoutBounds().getHeight()+1));
+                    row.set((int)(pane.getLayoutY()/pane.getLayoutBounds().getHeight()));
                 }
                 word.set(word.get()+letter.getText());
                 text.setText(letter.getText());
@@ -167,19 +170,17 @@ public class GameController extends BaseController implements Observer,Initializ
 
     }
 
-    public void setViewModel(ViewModel vm) {
+  /*  public void setViewModel(ViewModel vm) {
         this.vm = vm;
         vm.addObserver(this);
-    }
+    }*/
 
     @Override
     public void update(Observable o, Object arg) {
         if (o == vm) {
-            // update the view
+
         }
     }
-
-
 
     @FXML
     public void verticalButtonPushed(){
@@ -195,6 +196,21 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.trySetWord();
         System.out.println(vm.word.get());
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
+        System.out.println(vm.model.board.get_as_string());
+        int counter = 0;
+        for(int i=0 ; i<15 ; i++) {
+            for (int j = 0; j < 15; j++) {
+                this.tailsArray[i][j] = this.board.get().toCharArray()[counter];
+                counter++;
+            }
+        }
+        for(int i=0 ; i<15 ; i++) {
+            for (int j = 0; j < 15; j++) {
+                System.out.print(tailsArray[i][j]);
+            }
+            System.out.println("");
+        }
+        System.out.println("");
         resetChoice();
     }
 
@@ -205,6 +221,8 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.col);
         vm.row.bind(this.row);
+        this.board.bind(vm.board);
+
     }
 
 

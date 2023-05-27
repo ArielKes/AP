@@ -10,6 +10,7 @@ public class ViewModel extends Observable implements Observer {
     public BooleanProperty vertical;
     public BooleanProperty check;
     public StringProperty word;
+    public StringProperty board;
     public IntegerProperty col;
     public IntegerProperty row;
 
@@ -18,6 +19,7 @@ public class ViewModel extends Observable implements Observer {
         this.vertical = new SimpleBooleanProperty();
         this.check = new SimpleBooleanProperty();
         this.word = new SimpleStringProperty();
+        this.board = new SimpleStringProperty();
         this.col = new SimpleIntegerProperty();
         this.row = new SimpleIntegerProperty();
     }
@@ -28,6 +30,8 @@ public class ViewModel extends Observable implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-
+        if(o==model){
+            this.board.set(model.board.get_as_string());
+        }
     }
 }
