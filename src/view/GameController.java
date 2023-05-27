@@ -46,6 +46,23 @@ public class GameController extends BaseController implements Observer,Initializ
     private char tilesArray[][] = new char[15][15];
     private Text letter;
     ViewModel vm;
+    private final char[][] bonus = {
+            {'r','g','g','l','g','g','g','r','g','g','g','l','g','g','r'},
+            {'g','y','g','g','g','d','g','g','g','d','g','g','g','y','g'},
+            {'g','g','y','g','g','g','l','g','l','g','g','g','y','g','g'},
+            {'l','g','g','y','g','g','g','l','g','g','g','y','g','g','l'},
+            {'g','g','g','g','y','g','g','g','g','g','y','g','g','g','g'},
+            {'g','d','g','g','g','d','g','g','g','d','g','g','g','d','g'},
+            {'g','g','l','g','g','g','l','g','l','g','g','g','l','g','g'},
+            {'r','g','g','l','g','g','g','y','g','g','g','l','g','g','r'},
+            {'g','g','l','g','g','g','l','g','l','g','g','g','l','g','g'},
+            {'g','d','g','g','g','d','g','g','g','d','g','g','g','d','g'},
+            {'g','g','g','g','y','g','g','g','g','g','y','g','g','g','g'},
+            {'l','g','g','y','g','g','g','l','g','g','g','y','g','g','l'},
+            {'g','g','y','g','g','g','l','g','l','g','g','g','y','g','g'},
+            {'g','y','g','g','g','d','g','g','g','d','g','g','g','y','g'},
+            {'r','g','g','l','g','g','g','r','g','g','g','l','g','g','r'}
+    };
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -63,12 +80,30 @@ public class GameController extends BaseController implements Observer,Initializ
             for (int col = 0; col < 15; col++) {
                 Text t = new Text(40, 30, "");
                 Rectangle r = new Rectangle(38, 30);
-                r.setFill(Color.WHITE);
+                // coloring according to bonus
+                switch (bonus[row][col]){
+                    case 'r':
+                        r.setFill(Color.RED);
+                        break;
+                    case 'g':
+                        r.setFill(Color.GREEN);
+                        break;
+                    case 'y':
+                        r.setFill(Color.YELLOW);
+                        break;
+                    case 'l':
+                        r.setFill(Color.LIGHTBLUE);
+                        break;
+                    case 'd':
+                        r.setFill(Color.DARKBLUE);
+                        break;
+                }
                 StackPane pane = new StackPane(r, t);
                 pane.setOnMouseClicked(this::handleMouseClick);
                 gridPane.add(pane, col, row);
             }
         }
+
     }
 
     private void test(Event event) {
