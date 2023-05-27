@@ -11,8 +11,8 @@ public class ViewModel extends Observable implements Observer {
     public BooleanProperty check;
     public StringProperty word;
     public StringProperty board;
-    public IntegerProperty col;
-    public IntegerProperty row;
+    public StringProperty col;
+    public StringProperty row;
 
     public ViewModel(Model model){
         this.model = model;
@@ -20,8 +20,8 @@ public class ViewModel extends Observable implements Observer {
         this.check = new SimpleBooleanProperty();
         this.word = new SimpleStringProperty();
         this.board = new SimpleStringProperty();
-        this.col = new SimpleIntegerProperty();
-        this.row = new SimpleIntegerProperty();
+        this.col = new SimpleStringProperty();
+        this.row = new SimpleStringProperty();
     }
 
     public void trySetWord(){

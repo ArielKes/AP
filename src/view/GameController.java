@@ -1,12 +1,16 @@
 package view;
 
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.*;
 
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
@@ -23,7 +27,7 @@ import view_model.ViewModel;
 
 public class GameController extends BaseController implements Observer,Initializable {
     @FXML
-    private Button A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,delete;
+    private Button A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z;
     @FXML
     Button testButton;
     @FXML
@@ -35,20 +39,17 @@ public class GameController extends BaseController implements Observer,Initializ
     private final int gridSize = 15;
 
     private boolean letterChosen = false;
-    BooleanProperty ver = new SimpleBooleanProperty();
     BooleanProperty check = new SimpleBooleanProperty();
-    IntegerProperty col = new SimpleIntegerProperty();
-    IntegerProperty row = new SimpleIntegerProperty();
+    StringProperty cols = new SimpleStringProperty();
+    StringProperty rows = new SimpleStringProperty();
     StringProperty word = new SimpleStringProperty();
-    StringProperty board = new SimpleStringProperty();
-
-    private char tailsArray[][] = new char[15][15];
+    private char tilesArray[][] = new char[15][15];
     private Text letter;
     ViewModel vm;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,delete));
+        buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z));
         resetChoice();
 
         buttons.forEach(button ->{
@@ -87,19 +88,27 @@ public class GameController extends BaseController implements Observer,Initializ
         });
     }
 
+    private void colsAppend(int col){
+        cols.set(cols.get() + col);
+    }
+
+    private void rowsAppend(int row){
+        rows.set(rows.get() + row);
+    }
+
     private void handleMouseClick(Event event) {
         if (letterChosen){
             // write letter to text
             StackPane pane = (StackPane) event.getSource();
             Text text = (Text) pane.getChildren().get(1);
             if (text.getText().equals("") || letter.getText().equals(""))  {
-                if(word.get().equals("")){
-                    col.set((int)(pane.getLayoutX()/pane.getLayoutBounds().getWidth()));
-                    row.set((int)(pane.getLayoutY()/pane.getLayoutBounds().getHeight()));
-                }
-                word.set(word.get()+letter.getText());
                 text.setText(letter.getText());
-
+                Node node = (Node) event.getSource();
+                Integer col = GridPane.getColumnIndex(node);
+                Integer row = GridPane.getRowIndex(node);
+                colsAppend(col);
+                rowsAppend(row);
+                word.set(word.get()+letter.getText());
                 // reset letter
                 letterChosen = false;
             }
@@ -111,10 +120,12 @@ public class GameController extends BaseController implements Observer,Initializ
         letter = new Text(button.getText());
         letterChosen = true;
     }
+
     public void resetChoice(){
-        ver.set(false);
         check.set(false);
         word.set("");
+        cols.set("");
+        rows.set("");
     }
 
     private void changeColor(int row, int col, Color color){
@@ -170,59 +181,21 @@ public class GameController extends BaseController implements Observer,Initializ
 
     }
 
-  /*  public void setViewModel(ViewModel vm) {
-        this.vm = vm;
-        vm.addObserver(this);
-    }*/
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o == vm) {
-
-        }
-    }
-
-    @FXML
-    public void verticalButtonPushed(){
-        if(ver.get())
-            ver.set(false);
-        else
-            ver.set(true);
-        System.out.println("vertical "+vm.vertical.get());
-    }
-
     public void checkButtonPushed(){
         check.set(true);
         vm.trySetWord();
         System.out.println(vm.word.get());
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
         System.out.println(vm.model.board.get_as_string());
-        int counter = 0;
-        for(int i=0 ; i<15 ; i++) {
-            for (int j = 0; j < 15; j++) {
-                this.tailsArray[i][j] = this.board.get().toCharArray()[counter];
-                counter++;
-            }
-        }
-        for(int i=0 ; i<15 ; i++) {
-            for (int j = 0; j < 15; j++) {
-                System.out.print(tailsArray[i][j]);
-            }
-            System.out.println("");
-        }
-        System.out.println("");
         resetChoice();
     }
 
     public void setViewModel(ViewModel vm){
         this.vm = vm;
-        vm.vertical.bind(this.ver);
         vm.check.bind(this.check);
         vm.word.bind(this.word);
-        vm.col.bind(this.col);
-        vm.row.bind(this.row);
-        this.board.bind(vm.board);
-
+        vm.col.bind(this.cols);
+        vm.row.bind(this.rows);
     }
 
 
