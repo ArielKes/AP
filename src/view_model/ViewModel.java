@@ -93,7 +93,7 @@ public class ViewModel extends Observable implements Observer {
             int smallestRow = Arrays.stream(row_arr).min().getAsInt();
             int smallestCol = Arrays.stream(col_arr).min().getAsInt();
             Tile[] t = buildTilesArr(col_arr, row_arr, word.get().toCharArray());
-            Word w = new Word(t ,smallestCol ,smallestRow ,vertical);
+            Word w = new Word(t  ,smallestRow ,smallestCol ,vertical);
             for(Tile y : w.getTiles()){
                 if(y!=null)
                     System.out.print(y.letter);
