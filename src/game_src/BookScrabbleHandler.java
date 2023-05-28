@@ -43,8 +43,9 @@ public class BookScrabbleHandler implements ClientHandler {
         }
     }
 
-    private void send_score_table() {
+    private void send_score_table() throws IOException {
         GameClient.Request<ScoreTable> r = new GameClient.Request<>( "score_table","score_table", scoreTable);
+        r.sendRequest(new ObjectOutputStream(out));
     }
 
     private void check_word(String word,String clientName) throws IOException {

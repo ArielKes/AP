@@ -10,7 +10,7 @@ public class GameClientHandler implements ClientHandler{
 
     PrintWriter outToClient;
     Scanner in;
-    Socket clientSocket;
+    Socket clientSocket, gameServer;
 
     public GameClientHandler(Socket clientSocket) {
     }
@@ -24,17 +24,24 @@ public class GameClientHandler implements ClientHandler{
 
     @Override
     public void handleClient(Socket clientSocket, Socket gameServer) throws IOException {
-
+        this.clientSocket = clientSocket;
+        this.gameServer = gameServer;
         //send input from client to server and vice versa
         GameClient.Request<Integer> r = new GameClient.Request<>( "your_turn","String",-1);
         r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
         // wait to client to send 'client is done'
+        interactWithClient(clientSocket,gameServer);
+    }
+
+    public void interactWithClient(Socket clientSocket,Socket gameServer) {
+        this.clientSocket = clientSocket;
+        this.gameServer = gameServer;
         while (true) {
             // sent client request to game server
             try {
                 GameClient.Request res = utils.getRequestFromInput(clientSocket.getInputStream());
                 //check if turn ended
-                if (res.requestCommand.equals("turn_ended")) {
+                if ((res.requestCommand.equals("turn_ended")) || (res.requestCommand.equals("update_done"))) {
                     System.out.println("Game Host: client is done, moving to next client");
                     break;
                 }
@@ -52,7 +59,8 @@ public class GameClientHandler implements ClientHandler{
                     serverResponse.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
                 }
 
-            } catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
