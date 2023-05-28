@@ -195,7 +195,7 @@ public class GameClient implements Model{
     @Override
     public boolean checkWord(String w) {
         waitToTurn();
-        Request<String> r = new Request<>("String", "check_word", w);
+        Request<String> r = new Request<>("check_word", clientName, w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             //wait for server to send score

@@ -15,6 +15,7 @@ public class ScoreTable implements Serializable {
     }
 
     public void addScore(String clientName, int score) {
+        if (-3 < score && score < 0) score = 0; // in case of -1 / -2 from illegal word
         if (scores.containsKey(clientName)){
             scores.put(clientName, scores.get(clientName) + score);
         }

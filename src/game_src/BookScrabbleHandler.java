@@ -32,7 +32,7 @@ public class BookScrabbleHandler implements ClientHandler {
             if (command.equals("get_board")) send_board();
             else if (command.equals("place_word")) place((Word) request.object, request.requestArgs);
             else if (command.equals("get_tile")) send_tile();
-            else if (command.equals("check_word")) check_word((String) request.object);
+            else if (command.equals("check_word")) check_word((String) request.object, request.requestArgs);
             else if (command.equals("get_score_table")) send_score_table();
 
 
@@ -47,8 +47,14 @@ public class BookScrabbleHandler implements ClientHandler {
         GameClient.Request<ScoreTable> r = new GameClient.Request<>( "score_table","score_table", scoreTable);
     }
 
-    private void check_word(String word) throws IOException {
-        boolean res =  dm.challenge(word);
+    private void check_word(String word,String clientName) throws IOException {
+        boolean res =  dm.challenge("resources/words_alpha.txt",word);
+        if (!res){
+            scoreTable.addScore(clientName,-5);
+        }
+        else {
+            scoreTable.addScore(clientName,5);
+        }
         GameClient.Request<Boolean> r = new GameClient.Request<>( "checked_word","boolean", res);
         r.sendRequest(new ObjectOutputStream(out));
     }
