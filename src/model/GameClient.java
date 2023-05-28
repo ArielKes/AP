@@ -28,8 +28,8 @@ public class GameClient implements Model{
 
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
-        getNTiles(7);
-        placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+//        getNTiles(7);
+//        int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
 
     }
 
@@ -98,7 +98,7 @@ public class GameClient implements Model{
         //wait for server to send score
         try {
             Request respond = utils.getRequestFromInput(hs.getInputStream());
-            System.out.println("server respond: " + respond.object);
+            System.out.println("client on" + Thread.currentThread().getId()+ " -server respond: " + respond.object);
             return (String) respond.object;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -108,7 +108,23 @@ public class GameClient implements Model{
 
     @Override
     public HashMap<String, Integer> getScoreTable() {
-        return null;
+        waitToTurn();
+        Request<Integer> r = new Request<Integer>("get_score_table", "command", -1);
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            Request respond = utils.getRequestFromInput(hs.getInputStream());
+            if (!respond.requestCommand.equals("score_table")) {
+                System.out.println("error in server respond, expected score table got: " + respond.requestCommand);
+                throw new RuntimeException();
+            }
+            ScoreTable s = (ScoreTable) respond.object;
+            return s.scores;
+
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -118,6 +134,8 @@ public class GameClient implements Model{
 
     @Override
     public void addTile() {
+        waitToTurn();
+        getNTiles(1);
 
     }
 
@@ -149,9 +167,9 @@ public class GameClient implements Model{
 
     @Override
     public int placeWord(Word w) {
-        // todo: implement return -1 if word is invalid
+        // todo: implement return -1 if word is invalid -2 if physically impossible
         waitToTurn();
-        Request<Word> r = new Request<>("place_word","Word",  w);
+        Request<Word> r = new Request<>("place_word", clientName, w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             //wait for server to send score
@@ -159,6 +177,11 @@ public class GameClient implements Model{
             if (!serverRespond.requestCommand.equals("score")) {
                 System.out.println("error in server respond, expected score got: " + serverRespond.requestCommand);
                 throw new RuntimeException();
+            }
+            if ((int) serverRespond.object > 0) {
+                System.out.println("client on " + Thread.currentThread().getId() + ": place word successfully");
+                //todo check whats happening here if tiles contains a tile from w twice
+                this.tiles.remove(w.getTiles());
             }
             return (int) serverRespond.object;
         } catch (IOException | ClassNotFoundException e) {

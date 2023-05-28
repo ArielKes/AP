@@ -45,13 +45,13 @@ public class GameClientHandler implements ClientHandler{
                 }
 
                 else {
-                    System.out.println("Game Host: client request is: " + r);
+                    System.out.println("Game Host: client request is: " + r.requestCommand);
                     System.out.println("Game Host: sending client request to game server");
                     res.sendRequest(new ObjectOutputStream(gameServer.getOutputStream()));
                     // wait for game server response
                     System.out.println("Game Host: waiting for game server response");
                     GameClient.Request serverResponse = utils.getRequestFromInput(gameServer.getInputStream());
-                    System.out.println("Game Host: game server response is: " + serverResponse);
+                    System.out.println("Game Host: game server response is: " + serverResponse.requestCommand);
                     // send game server response to client
                     System.out.println("Game Host: sending game server response to client");
                     serverResponse.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));

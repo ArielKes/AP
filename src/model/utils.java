@@ -36,7 +36,7 @@ public class utils {
         if (response != null) {
             String command = in.readUTF();
             Serializable data = (Serializable) in.readObject();
-            return new GameClient.Request(response, command, data);
+            return new GameClient.Request(command,response, data);
         }
 
 

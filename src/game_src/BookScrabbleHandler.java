@@ -22,6 +22,7 @@ public class BookScrabbleHandler implements ClientHandler {
         dm = DictionaryManager.get();
         board = new Board();
         bag = new Tile.Bag();
+        scoreTable = new ScoreTable();
     }
 
 
@@ -29,14 +30,21 @@ public class BookScrabbleHandler implements ClientHandler {
         try {
             String command = request.requestCommand;
             if (command.equals("get_board")) send_board();
-            else if (command.equals("place_word")) place((Word) request.object);
+            else if (command.equals("place_word")) place((Word) request.object, request.requestArgs);
             else if (command.equals("get_tile")) send_tile();
             else if (command.equals("check_word")) check_word((String) request.object);
+            else if (command.equals("get_score_table")) send_score_table();
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    private void send_score_table() {
+        GameClient.Request<ScoreTable> r = new GameClient.Request<>( "score_table","score_table", scoreTable);
     }
 
     private void check_word(String word) throws IOException {
@@ -50,8 +58,9 @@ public class BookScrabbleHandler implements ClientHandler {
         r.sendRequest(new ObjectOutputStream(out));
     }
 
-    private void place(Word w) throws IOException {
+    private void place(Word w,String clientName) throws IOException {
         int score = board.tryPlaceWord(w);
+        if (score > 0) scoreTable.addScore(clientName,score);
         GameClient.Request<Integer> r = new GameClient.Request<>( "score","int", score);
         r.sendRequest(new ObjectOutputStream(out));
     }
