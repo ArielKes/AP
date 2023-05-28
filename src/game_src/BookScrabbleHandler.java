@@ -59,8 +59,10 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     private void place(Word w,String clientName) throws IOException {
-        int score = board.tryPlaceWord(w);
-        if (score > 0) scoreTable.addScore(clientName,score);
+        int score = board.tryPlaceWord(w,dm);
+        scoreTable.addScore(clientName,score);
+        System.out.println("Score Table :" + scoreTable.toString());
+        System.out.println("Board: " + board.get_as_string());
         GameClient.Request<Integer> r = new GameClient.Request<>( "score","int", score);
         r.sendRequest(new ObjectOutputStream(out));
     }
@@ -81,7 +83,7 @@ public class BookScrabbleHandler implements ClientHandler {
             GameClient.Request clientRequest = null;
             try {
                 clientRequest = utils.getRequestFromInput(inFromClient);
-                System.out.println("Game Server: client request is - " + clientRequest);
+                System.out.println("Game Server: client request is - " + clientRequest.requestCommand);
                 parseRequest(clientRequest);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);

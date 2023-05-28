@@ -28,8 +28,9 @@ public class GameClient implements Model{
 
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
-//        getNTiles(7);
-//        int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+        getNTiles(7);
+        int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+        this.endTurn();
 
     }
 

@@ -22,4 +22,13 @@ public class ScoreTable implements Serializable {
             scores.put(clientName, score);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (String clientName : scores.keySet()){
+            sb.append(clientName).append(": ").append(scores.get(clientName)).append("\n");
+        }
+        return sb.toString();
+    }
 }
