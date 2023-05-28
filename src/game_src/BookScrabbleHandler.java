@@ -48,7 +48,7 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     private void check_word(String word,String clientName) throws IOException {
-        boolean res =  dm.challenge("resources/words_alpha.txt",word);
+        boolean res =  dm.challenge("/Users/shlomo/IdeaProjects/AP/src/resources/words_alpha.txt",word);
         if (!res){
             scoreTable.addScore(clientName,-5);
         }
