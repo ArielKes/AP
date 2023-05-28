@@ -5,9 +5,11 @@ import java.net.URL;
 import java.util.Observer;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import view_model.ViewModel;
 
 
 public class WaitingController extends BaseController implements Observer,Initializable{
@@ -22,6 +24,7 @@ public class WaitingController extends BaseController implements Observer,Initia
     private Label playerCountLabel;
 
     private int playerCount = 1;
+    ViewModel vm;
 
 
     @Override
@@ -30,7 +33,10 @@ public class WaitingController extends BaseController implements Observer,Initia
         updatePlayerCount(playerCount);
         startButton.setOnAction(event -> {
             try {
-                changeScene("game.fxml", event);
+                FXMLLoader fxmlLoader = changeScene("game.fxml", event);
+                GameController gc = fxmlLoader.getController();
+                gc.setViewModel(vm);
+                vm.addObserver(gc);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -49,5 +55,9 @@ public class WaitingController extends BaseController implements Observer,Initia
         waitingLabel.setText(name + " has joined the game!");
         playerCount++;
         updatePlayerCount(playerCount);
+    }
+
+    public void setViewModel(ViewModel vm) {
+        this.vm = vm;
     }
 }

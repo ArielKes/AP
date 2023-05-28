@@ -17,12 +17,12 @@ public class Application extends javafx.application.Application {
         ViewModel vm = new ViewModel(m);
         m.addObserver(vm);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("game.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("welcome.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
 
-        GameController gc = fxmlLoader.getController();
-        gc.setViewModel(vm);
-        vm.addObserver(gc);
+        WelcomeController wc = fxmlLoader.getController();
+        wc.setViewModel(vm);
+        vm.addObserver(wc);
 
         stage.setTitle("Scrabble!");
         stage.setScene(scene);

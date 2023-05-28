@@ -14,13 +14,14 @@ import java.util.Observer;
 
 public abstract class BaseController implements Observer, Initializable {
 
-    public void changeScene(String fxml, ActionEvent event) throws IOException {
+    public FXMLLoader changeScene(String fxml, ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxml));
         Parent root = fxmlLoader.load();
         Stage stage = (Stage)((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
+        return fxmlLoader;
     }
 
     @Override

@@ -1,9 +1,11 @@
 package view;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import view_model.ViewModel;
 
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class WelcomeController extends BaseController implements Observer,Initia
 
     private final String[] gameTypes = {"Join an existing game", "Create a new game"};
     private boolean newGame;
+    ViewModel vm;
 
 
     @Override
@@ -32,11 +35,18 @@ public class WelcomeController extends BaseController implements Observer,Initia
         });
         startButton.setOnAction(event -> {
             try {
-                changeScene("waiting.fxml", event);
+                FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
+                WaitingController wc = fxmlLoader.getController();
+                wc.setViewModel(vm);
+                vm.addObserver(wc);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
+    }
+
+    public void setViewModel(ViewModel vm) {
+        this.vm = vm;
     }
 }
