@@ -288,7 +288,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
-//        vm.tilesAmount.bind(this.tilesAmount);
+        vm.tilesAmount.bind(this.tilesAmount);
     }
 
 

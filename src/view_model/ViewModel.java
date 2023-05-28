@@ -3,6 +3,8 @@ package view_model;
 import game_src.Tile;
 import game_src.Word;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import model.Model;
 
 import java.util.*;
@@ -15,6 +17,10 @@ public class ViewModel extends Observable implements Observer {
     public StringProperty col;
     public StringProperty row;
     private boolean vertical;
+    ObservableList<Integer> tilesAmountList = new SimpleListProperty<>();
+    ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountList);
+    public ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
+    List<Tile> playersTiles;
 
     public ViewModel(Model model){
         this.model = model;
@@ -24,6 +30,40 @@ public class ViewModel extends Observable implements Observer {
         this.col = new SimpleStringProperty();
         this.row = new SimpleStringProperty();
         this.vertical = true;
+        this.getTilesForPlayer();
+    }
+
+    private void getTilesForPlayer(){
+        for(int i=0 ; i<26 ; i++){
+            this.tilesAmount.add(0);
+        }
+        for(Tile t:this.model.getClientTiles()){
+            this.playersTiles.add(t);
+            int j = t.letter - 'A';
+            this.tilesAmount.set(j,this.tilesAmount.get(j)+1);
+        }
+    }
+
+    private Tile popPlayersTiles(char c){
+        List<Tile>newList = new ArrayList<Tile>();
+        Tile tile = null;
+        for(Tile t:this.playersTiles){
+            newList.add(t);
+        }
+        for(int i=0 ; i<newList.size() ; i++){
+            if(newList.get(i).letter == c) {
+                this.tilesAmount.set((c - 'A'),this.tilesAmount.get(c - 'A')-1) ;
+                tile = newList.get(i);
+                newList.set(i, null);
+                break;
+            }
+        }
+        this.playersTiles.clear();
+        for(Tile t:newList){
+            if(t!=null)
+                this.playersTiles.add(t);
+        }
+        return tile;
     }
 
     private int[] parseIntString(String s){
@@ -81,7 +121,7 @@ public class ViewModel extends Observable implements Observer {
         }
         Tile[] t = new Tile[newWord.size()];
         for(int i=0 ; i<newWord.size() ; i++)
-            t[i] = null;// model.bag.getTile(newWord.get(i));
+            t[i] = this.popPlayersTiles(newWord.get(i));
         return t;
     }
 
