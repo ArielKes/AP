@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import view_model.GameServerConnection;
 import view_model.ViewModel;
 
 
@@ -23,8 +24,7 @@ public class WelcomeController extends BaseController implements Observer,Initia
 
     private final String[] gameTypes = {"Join an existing game", "Create a new game"};
     private boolean newGame;
-    ViewModel vm;
-
+    GameServerConnection gsc;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,10 +35,11 @@ public class WelcomeController extends BaseController implements Observer,Initia
         });
         startButton.setOnAction(event -> {
             try {
+                this.gsc.connectToServer(newGame);
                 FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
                 WaitingController wc = fxmlLoader.getController();
-                wc.setViewModel(vm);
-                vm.addObserver(wc);
+                wc.setGameServerConnection(this.gsc);
+                wc.setViewModel(this.gsc.getVM());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -46,7 +47,8 @@ public class WelcomeController extends BaseController implements Observer,Initia
 
     }
 
-    public void setViewModel(ViewModel vm) {
-        this.vm = vm;
+    public void setGameServerConnection(GameServerConnection gsc) {
+       this.gsc = gsc;
     }
+
 }

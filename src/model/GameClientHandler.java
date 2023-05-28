@@ -2,64 +2,71 @@ package model;
 
 import game_src.ClientHandler;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class GameClientHandler implements ClientHandler{
 
-    PrintWriter outToClient,outToGameServer;
+    PrintWriter outToClient;
     Scanner in;
-    //static int i;
-    boolean hasSocket;
+    Socket clientSocket;
 
-    public GameClientHandler(){
-        hasSocket = false;
+
+    public GameClientHandler(Socket clientSocket){
+        this.clientSocket = clientSocket;
     }
 
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient) {
 
     }
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket gameServer) throws IOException {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient, Socket gameServer) throws IOException {
     }
 
     @Override
     public void handleClient(Socket clientSocket, Socket gameServer) throws IOException {
+
         //send input from client to server and vice versa
-        this.outToClient = new PrintWriter(clientSocket.getOutputStream());
-        this.in = new Scanner(clientSocket.getInputStream());
-        this.outToClient.println("your turn#");
-        this.outToClient.flush();
+        GameClient.Request<Integer> r = new GameClient.Request<>( "your_turn","String",-1);
+        r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
         // wait to client to send 'client is done'
         while (true) {
             // sent client request to game server
-            String clientRequest = utils.getRespondFromServer(clientSocket);
-            System.out.println("Game Host: client request is: " + clientRequest);
-            System.out.println("Game Host: sending client request to game server");
-            outToGameServer = new PrintWriter(gameServer.getOutputStream());
-            outToGameServer.println(clientRequest);
-            outToGameServer.flush();
-            // wait for game server response
-            System.out.println("Game Host: waiting for game server response");
-            String serverResponse = utils.getRespondFromServer(gameServer);
-            System.out.println("Game Host: game server response is: " + serverResponse);
-            // send game server response to client
-            System.out.println("Game Host: sending game server response to client");
-            this.outToClient.println(serverResponse);
-            this.outToClient.flush();
-            // check if client is done
-            if (in.nextLine().equals("done#")) {
-                System.out.println("Game Host: client is done, moving to next client");
-                break;
+            try {
+                GameClient.Request res = utils.getRequestFromInput(clientSocket.getInputStream());
+                //check if turn ended
+                if (res.requestCommand.equals("turn_ended")) {
+                    System.out.println("Game Host: client is done, moving to next client");
+                    break;
+                }
+
+                else {
+                    System.out.println("Game Host: client request is: " + r);
+                    System.out.println("Game Host: sending client request to game server");
+                    res.sendRequest(new ObjectOutputStream(gameServer.getOutputStream()));
+                    // wait for game server response
+                    System.out.println("Game Host: waiting for game server response");
+                    GameClient.Request serverResponse = utils.getRequestFromInput(gameServer.getInputStream());
+                    System.out.println("Game Host: game server response is: " + serverResponse);
+                    // send game server response to client
+                    System.out.println("Game Host: sending game server response to client");
+                    serverResponse.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
+                }
+
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
         }
+    }
+
+
+    void sendToClient(String msg) throws IOException {
+        GameClient.Request<Integer> r = new GameClient.Request<>(msg,"String",-1);
+        r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
     }
 
     @Override

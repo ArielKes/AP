@@ -14,22 +14,22 @@ import java.util.concurrent.ThreadPoolExecutor;
 import game_src.ClientHandler;
 
 
-public class GameHost {
+public class GameHost{
 
     private static final int MAX_PLAYERS = 4;
     private final HashMap<String, String> properties;
     private final Socket bookServerSocket;
     private final ThreadPoolExecutor threadPool;
     private final HashMap<Integer, Socket> clients;
-    private final Map<Socket, ClientHandler> handlers;
+    private final Map<Socket, GameClientHandler> handlers;
     private volatile boolean gameOver = false;
     private volatile boolean allow_to_connect = true;
     private ServerSocket hostServerSocket;
     private volatile int currentPlayerCount;
     int gameHostPort ;
 
-    public GameHost(String propertiesFileName) throws IOException {
-        this.properties = utils.getProperties(propertiesFileName);
+    public GameHost(String clientName) throws IOException {
+        this.properties = utils.getProperties("src/resources/properties.txt");
         this.bookServerSocket = getBookServerSocket();
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_PLAYERS);
         this.clients = new HashMap<>();
@@ -74,11 +74,11 @@ public class GameHost {
     private void handleClients() {
         while (!gameOver) {
             // iterate over clients and handle each one
-            for (Map.Entry<Socket, ClientHandler> entry : handlers.entrySet()) {
+            for (Map.Entry<Socket, GameClientHandler> entry : handlers.entrySet()) {
                 Socket clientSocket = entry.getKey();
                 ClientHandler clientHandler = entry.getValue();
                 try {
-                    if (clientSocket.getInputStream().available() > 0) {
+                    if (clientSocket.getInputStream().available() >= 0) {
                         System.out.println("Game Host: Handling client: " + entry.getKey());
                         clientHandler.handleClient(clientSocket, bookServerSocket);
                     }
@@ -116,7 +116,7 @@ public class GameHost {
     private void connectNewClient() throws IOException {
         Socket clientSocket = hostServerSocket.accept();
         clients.put(currentPlayerCount, clientSocket);
-        handlers.put(clientSocket, new GameClientHandler());
+        handlers.put(clientSocket, new GameClientHandler(clientSocket));
         currentPlayerCount++;
         System.out.println("Game Host: New client connected: " + clientSocket);
 
@@ -133,9 +133,16 @@ public class GameHost {
     public void startGame() {
         System.out.println("Game Host: Starting game...");
         allow_to_connect = false;
+
         new Thread(this::handleClients).start();
     }
-
+    private void sentToAllClients(String msg) throws IOException {
+        for (Map.Entry<Socket, GameClientHandler> entry : handlers.entrySet()) {
+            Socket clientSocket = entry.getKey();
+            GameClientHandler clientHandler = entry.getValue();
+            clientHandler.sendToClient(msg);
+        }
+    }
     public void close() {
         gameOver = true;
     }

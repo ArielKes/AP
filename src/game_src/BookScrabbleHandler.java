@@ -1,78 +1,83 @@
 package game_src;
 
 
+import model.GameClient;
+import model.ScoreTable;
 import model.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
+import java.io.*;
 
-public class BookScrabbleHandler implements ClientHandler{
-    PrintWriter out;
-    Scanner in;
+public class BookScrabbleHandler implements ClientHandler {
     DictionaryManager dm;
     Board board;
-    public BookScrabbleHandler(){
+    OutputStream out;
+    InputStream in;
+    Tile.Bag bag;
+    ScoreTable scoreTable;
+    public BookScrabbleHandler() {
         dm = DictionaryManager.get();
         board = new Board();
+        bag = new Tile.Bag();
     }
 
-    private boolean DictionaryManagerHandler(String input){
-        //get input as string of args with "," as separators
-        //for example: input:"command, text file 1, ..., text file i, question for the dictionary"
-        String[] parseInput = input.split(",");
-        System.out.println("gameServer printing "+in);
-        //the first arg in the input is command to the Dictionary Manager
-        String command = parseInput[0];
 
-        //the other args from the input souled be passed down to the
-        //Dictionary Manager for it to use
-        String[] args = new String[parseInput.length - 1];
-        for(int i = 1;i < parseInput.length;i++) {
-            args[i-1] = parseInput[i];
-        }
+    private void parseRequest(GameClient.Request request) {
+        try {
+            String command = request.requestCommand;
+            if (command.equals("get_board")) send_board();
+            else if (command.equals("place_word")) place((Word) request.object);
+            else if (command.equals("get_tile")) send_tile();
+            else if (command.equals("check_word")) check_word((String) request.object);
 
-        //here we use the command to decide what the Dictionary Manager will do
-        if (command.equals("Q"))
-            return dm.query(args);
-        else if(command.equals("C"))
-            return dm.challenge(args);
-        //if for some reason the command is not Q, or C as we acspected the
-        //function will return 'false'
-        return false;
-    }
-
-    private void parseRequest(String request){
-        String[] parseInput = request.split("#");
-        String command = parseInput[0];
-        if (command.contains("get_board")) {
-            send_board();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    private void send_board(){
+    private void check_word(String word) throws IOException {
+        boolean res =  dm.challenge(word);
+        GameClient.Request<Boolean> r = new GameClient.Request<>( "checked_word","boolean", res);
+        r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    private void send_tile() throws IOException {
+        GameClient.Request<Tile> r = new GameClient.Request<>( "sent_tile","tile", bag.getRand());
+        r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    private void place(Word w) throws IOException {
+        int score = board.tryPlaceWord(w);
+        GameClient.Request<Integer> r = new GameClient.Request<>( "score","int", score);
+        r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    private void send_board() throws IOException {
         System.out.println("sending board");
-        out.println(board.get_as_string());
-        out.flush();
+        GameClient.Request<String> r = new GameClient.Request<>( "sent_board","board", board.get_as_string());
+        r.sendRequest(new ObjectOutputStream(out));
     }
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient) throws IOException {
         // get input from client (Game Host) and send it to the Dictionary Manager or the Board
-        out = new PrintWriter(outToClient);
-        in = new Scanner(inFromclient);
+        this.out = outToClient;
+        this.in = inFromClient;
+
         while (true) {
-            String clientRequest = utils.getRespondFromServer(inFromclient);
-            System.out.println("Game Server: client request is - " + clientRequest);
-            parseRequest(clientRequest);
-            out.println("Hi I got your message");
-            out.flush();
-//            boolean res = DictionaryManagerHandler(in.next());
-//            out.println(res);
-//            out.flush();
+            GameClient.Request clientRequest = null;
+            try {
+                clientRequest = utils.getRequestFromInput(inFromClient);
+                System.out.println("Game Server: client request is - " + clientRequest);
+                parseRequest(clientRequest);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 
@@ -88,7 +93,5 @@ public class BookScrabbleHandler implements ClientHandler{
     @Override
     public void close() {
         dm.closeLibrary();
-        in.close();
-        out.close();
     }
 }

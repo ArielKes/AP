@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import view_model.GameServerConnection;
 import view_model.ViewModel;
 
 
@@ -24,8 +25,8 @@ public class WaitingController extends BaseController implements Observer,Initia
     private Label playerCountLabel;
 
     private int playerCount = 1;
+    GameServerConnection gsc;
     ViewModel vm;
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -33,17 +34,18 @@ public class WaitingController extends BaseController implements Observer,Initia
         updatePlayerCount(playerCount);
         startButton.setOnAction(event -> {
             try {
-                FXMLLoader fxmlLoader = changeScene("game.fxml", event);
-                GameController gc = fxmlLoader.getController();
-                gc.setViewModel(vm);
-                vm.addObserver(gc);
+                if(this.gsc.StartGame()) {
+                    FXMLLoader fxmlLoader = changeScene("game.fxml", event);
+                    GameController gc = fxmlLoader.getController();
+                    gc.setViewModel(vm);
+                    vm.addObserver(gc);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
     }
-
 
     private void updatePlayerCount(int playerCount) {
         playerCountLabel.setText("Current number of players: " + playerCount);
@@ -57,7 +59,7 @@ public class WaitingController extends BaseController implements Observer,Initia
         updatePlayerCount(playerCount);
     }
 
-    public void setViewModel(ViewModel vm) {
-        this.vm = vm;
-    }
+    public void setGameServerConnection(GameServerConnection gsc) {this.gsc = gsc;}
+
+    public void setViewModel(ViewModel vm){this.vm = vm;}
 }

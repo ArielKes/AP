@@ -216,12 +216,12 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.trySetWord();
         System.out.println(vm.word.get());
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
-        System.out.println(vm.model.board.get_as_string());
+        //System.out.println(vm.model.board.get_as_string());
         resetChoice();
     }
 
     public void updateBoardDisplay(){
-        String board = vm.model.board.get_as_string();
+       /* String board = vm.model.board.get_as_string();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
                 StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
@@ -233,7 +233,7 @@ public class GameController extends BaseController implements Observer,Initializ
                     text.setText(String.valueOf(c));
                 }
             }
-        }
+        }*/
     }
 
 

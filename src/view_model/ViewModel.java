@@ -81,7 +81,7 @@ public class ViewModel extends Observable implements Observer {
         }
         Tile[] t = new Tile[newWord.size()];
         for(int i=0 ; i<newWord.size() ; i++)
-            t[i] = model.bag.getTile(newWord.get(i));
+            t[i] = null;//model.bag.getTile(newWord.get(i));
         return t;
     }
 
@@ -101,7 +101,7 @@ public class ViewModel extends Observable implements Observer {
                     System.out.print("_");
             }
             System.out.println("");
-            this.model.tryPlaceWord(w);
+           // this.model.tryPlaceWord(w);
         }
         vertical = true;
     }
@@ -109,7 +109,8 @@ public class ViewModel extends Observable implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if(o==model){
-            this.board.set(model.board.get_as_string());
+           // this.board.set(model.board.get_as_string());
         }
     }
+
 }
