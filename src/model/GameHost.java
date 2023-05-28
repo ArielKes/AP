@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import game_src.ClientHandler;
 
 
-public class GameHost extends GameClient{
+public class GameHost{
 
     private static final int MAX_PLAYERS = 4;
     private final HashMap<String, String> properties;
@@ -29,7 +29,6 @@ public class GameHost extends GameClient{
     int gameHostPort ;
 
     public GameHost(String clientName) throws IOException {
-        super(clientName);
         this.properties = utils.getProperties("src/resources/properties.txt");
         this.bookServerSocket = getBookServerSocket();
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_PLAYERS);

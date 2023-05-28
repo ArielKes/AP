@@ -36,7 +36,8 @@ public class GameClient implements Model{
         this.scoreTable = new ScoreTable();
         properties = utils.getProperties("src/resources/properties.txt");
         objectOutputStream = new ObjectOutputStream(hs.getOutputStream());
-        objectInputStream = new ObjectInputStream(hs.getInputStream());
+        //objectInputStream = new ObjectInputStream(hs.getInputStream());
+
         this.out = new PrintWriter(hs.getOutputStream());
         this.listenToGameStart();
         this.listenToMyTurn();
@@ -81,7 +82,7 @@ public class GameClient implements Model{
             while (true) {
                 String serverRespond = utils.getRespondFromServer(hs);
                 if (serverRespond.equals("your turn#")) {
-                    System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
+                    //System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
                     this.myTurn = true;
                     try {
                         // pause for 2 seconds
@@ -155,13 +156,18 @@ public class GameClient implements Model{
     }
 
 
-    private Tile getTile(){
+    private Tile getTile() {
         waitToTurn();
+
         this.out.println("get_tile#");
         this.out.flush();
+        Request r = new Request("command", "getTile", -1);
+        r.sendRequest(this.objectOutputStream);
+
         //wait for server to send score
         Tile tile = null;
         try {
+            Request rr = utils.getResponseFromServer1(hs);
             tile = (Tile) objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -184,6 +190,7 @@ public class GameClient implements Model{
         // n if word is valid and in dictionary and n is the score
         waitToTurn();
         int score = -1;
+        Request r = new Request("placeWord", "placeWord", w);
         this.out.println("placeWord#" + w);
         this.out.flush();
         try {
@@ -205,6 +212,39 @@ public class GameClient implements Model{
     @Override
     public boolean checkWord(Word w) {
         return false;
+    }
+
+
+
+    public static class Request<T extends Serializable> implements Serializable {
+
+        private String requestType;
+        private String requestCommand;
+        private T object;
+
+        // Constructor
+        public Request(String requestType, String requestCommand, T object) {
+            this.requestType = requestType;
+            this.requestCommand = requestCommand;
+            this.object = object;
+        }
+
+        public void sendRequest(ObjectOutputStream objectOutputStream)  {
+            try {
+                objectOutputStream.writeUTF(this.requestType);
+                objectOutputStream.writeUTF(this.requestCommand);
+                objectOutputStream.writeObject(this.object);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        public void sendRaw(ObjectOutputStream objectOutputStream)  {
+            try {
+                objectOutputStream.writeObject(this);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
 

@@ -42,9 +42,10 @@ public class MyServer {
                             ClientHandler ch = chClass.getDeclaredConstructor().newInstance();
                             // handle the client
                             ch.handleClient(aClient.getInputStream(), aClient.getOutputStream());
-                            // close the client handler
-                            aClient.close();
-                            ch.close();
+                            //todo : remove this comment and delete this line after testing
+//                            // close the client handler
+//                            aClient.close();
+//                            ch.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         } catch (InvocationTargetException | InstantiationException |

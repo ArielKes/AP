@@ -15,7 +15,8 @@ public class dummyA {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        System.out.println("dummyA pid: "+utils.getProcessId());
+        System.
+                out.println("dummyA pid: "+utils.getProcessId());
         game_src.MyServer s=new game_src.MyServer(getBookPort("src/resources/properties.txt"), new BookScrabbleHandler(),1);
         s.start();
         sleep(1000);
@@ -31,11 +32,9 @@ public class dummyA {
             new Thread(() -> {
                 try {
                     GameClient c = new GameClient(Integer.toString(finalI));
-                    c.placeWordOnBoard(new Word("hello", 0, 0, true));
+                    c.getNTiles(2);
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
                 }
             }).start();
 

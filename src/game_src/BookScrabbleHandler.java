@@ -14,8 +14,11 @@ import java.io.*;
 public class BookScrabbleHandler implements ClientHandler{
     PrintWriter out;
     Scanner in;
+    ObjectInputStream ois = null;
+    ObjectOutputStream oos = null;
     DictionaryManager dm;
     Board board;
+
 
     Tile.Bag bag;
     public BookScrabbleHandler(){
@@ -49,7 +52,7 @@ public class BookScrabbleHandler implements ClientHandler{
         return false;
     }
 
-    private void parseRequest(String request, ObjectInputStream ois ){
+    private void parseRequest(String request ){
         String[] parseInput = request.split("#");
         String command = parseInput[0];
         if (command.contains("get_board")) {
@@ -59,7 +62,7 @@ public class BookScrabbleHandler implements ClientHandler{
             //send_dictionary();
         }
         if (command.contains("placeWord")) {
-            place(ois);
+            place();
         }
         if (command.contains("get_tile")) {
             send_tiles();
@@ -68,12 +71,14 @@ public class BookScrabbleHandler implements ClientHandler{
 
     private void send_tiles() {
         Tile t = bag.getRand();
-
-        out.println(bag.getRand());
-        out.flush();
+        try {
+            oos.writeObject(t);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    private  void place(ObjectInputStream ois){
+    private  void place(){
         Word w = null;
         try {
             w = (Word) ois.readObject();
@@ -106,11 +111,12 @@ public class BookScrabbleHandler implements ClientHandler{
         // get input from client (Game Host) and send it to the Dictionary Manager or the Board
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
-        ObjectInputStream ois = new ObjectInputStream(inFromclient);
+        this.ois = new ObjectInputStream(inFromclient);
+        this.oos = new ObjectOutputStream(outToClient);
         while (true) {
             String clientRequest = utils.getRespondFromServer(inFromclient);
             System.out.println("Game Server: client request is - " + clientRequest);
-            parseRequest(clientRequest,ois);
+            parseRequest(clientRequest);
 //            out.println("Hi I got your message");
 //            out.flush();
 //            boolean res = DictionaryManagerHandler(in.next());

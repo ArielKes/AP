@@ -41,6 +41,21 @@ public class utils {
         }
         return respond;
     }
+
+    public static final GameClient.Request getResponseFromServer1(Socket hs) throws IOException, ClassNotFoundException {
+        String response = null;
+        GameClient.Request request = null;
+
+        ObjectInputStream in = new ObjectInputStream(hs.getInputStream());
+        response = in.readUTF();
+        if (response != null) {
+            String command = in.readUTF();
+            Serializable data = (Serializable) in.readObject();
+            return new GameClient.Request(response, command, data);
+        }
+        return request;
+    }
+
     public static final String getRespondFromServer(InputStream inFromclient) {
 
         String respond = null;
