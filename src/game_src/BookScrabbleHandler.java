@@ -1,6 +1,7 @@
 package game_src;
 
 
+import model.GameClient;
 import model.utils;
 
 import java.io.IOException;
@@ -52,9 +53,8 @@ public class BookScrabbleHandler implements ClientHandler{
         return false;
     }
 
-    private void parseRequest(String request ){
-        String[] parseInput = request.split("#");
-        String command = parseInput[0];
+    private void parseRequest(GameClient.Request request){
+        String command = request.requestCommand;
         if (command.contains("get_board")) {
             send_board();
         }
@@ -70,12 +70,8 @@ public class BookScrabbleHandler implements ClientHandler{
     }
 
     private void send_tiles() {
-        Tile t = bag.getRand();
-        try {
-            oos.writeObject(t);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        GameClient.Request r = new GameClient.Request("tile","sent_tile",bag.getRand());
+        r.sendRequest(oos);
     }
 
     private  void place(){
@@ -111,17 +107,18 @@ public class BookScrabbleHandler implements ClientHandler{
         // get input from client (Game Host) and send it to the Dictionary Manager or the Board
         out = new PrintWriter(outToClient);
         in = new Scanner(inFromclient);
-        this.ois = new ObjectInputStream(inFromclient);
+//        this.ois = new ObjectInputStream(inFromclient);
         this.oos = new ObjectOutputStream(outToClient);
         while (true) {
-            String clientRequest = utils.getRespondFromServer(inFromclient);
-            System.out.println("Game Server: client request is - " + clientRequest);
-            parseRequest(clientRequest);
-//            out.println("Hi I got your message");
-//            out.flush();
-//            boolean res = DictionaryManagerHandler(in.next());
-//            out.println(res);
-//            out.flush();
+            GameClient.Request clientRequest = null;
+            try {
+                clientRequest = utils.getResponseFromServer1(inFromclient);
+                System.out.println("Game Server: client request is - " + clientRequest);
+                parseRequest(clientRequest);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 

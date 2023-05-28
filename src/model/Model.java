@@ -22,6 +22,4 @@ public interface Model {
     boolean checkWord (Word w);
 
 
-
-
 }

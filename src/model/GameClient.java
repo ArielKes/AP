@@ -14,10 +14,10 @@ public class GameClient implements Model{
     // Connection variables
     protected Socket hs;
     private HashMap<String, String> properties;
-    PrintWriter out;
     ObjectOutputStream objectOutputStream;
     ObjectInputStream objectInputStream;
-
+    Request request;
+    private volatile boolean inRequestReady = false;
 
     // administration variables
     private volatile boolean gameStarted = false;
@@ -36,11 +36,7 @@ public class GameClient implements Model{
         this.scoreTable = new ScoreTable();
         properties = utils.getProperties("src/resources/properties.txt");
         objectOutputStream = new ObjectOutputStream(hs.getOutputStream());
-        //objectInputStream = new ObjectInputStream(hs.getInputStream());
-
-        this.out = new PrintWriter(hs.getOutputStream());
-        this.listenToGameStart();
-        this.listenToMyTurn();
+        //this.listenToHost();
     }
 
 
@@ -62,8 +58,8 @@ public class GameClient implements Model{
         // n if word is valid and in dictionary and n is the score
         waitToTurn();
         int score = -1;
-        this.out.println("placeWord#" + w);
-        this.out.flush();
+//        this.out.println("placeWord#" + w);
+//        this.out.flush();
         objectOutputStream.writeObject(w);
         //wait for server to send score
         String serverRespond = utils.getRespondFromServer(hs);
@@ -74,51 +70,62 @@ public class GameClient implements Model{
         return Integer.parseInt(serverRespond.split("#")[1]);
     }
 
-    void listenToMyTurn() {
-        // start new thread to listen to server
-        // if server send 'your turn' then set myTurn to true
-        // else set myTurn to false
-        Thread clientThread = new Thread(() -> {
-            while (true) {
-                String serverRespond = utils.getRespondFromServer(hs);
-                if (serverRespond.equals("your turn#")) {
-                    //System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
-                    this.myTurn = true;
-                    try {
-                        // pause for 2 seconds
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        // handle the exception
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        clientThread.start();
-    }
+//    void listenToHost() {
+//        // start new thread to listen to server
+//        // if server send 'your turn' then set myTurn to true
+//        // else set myTurn to false
+//        Thread clientThread = new Thread(() -> {
+//            while (true) {
+//                Request serverRespond = null;
+//
+//                try {
+//                    serverRespond = utils.getResponseFromServer1(hs.getInputStream());
+//                    if (serverRespond.requestCommand.equals("your_turn")) {
+//                        System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
+//                        this.myTurn = true;
+//
+//                    }
+//                    else if (serverRespond.requestCommand.equals("game_started")) {
+//                        System.out.println("client on " + Thread.currentThread().getId() + ": game started");
+//                        this.gameStarted = true;
+//                    }
+//                    else{
+//                        this.request = serverRespond;
+//                        this.inRequestReady = true;
+//                        System.out.println("client on " + Thread.currentThread().getId() + ": got request");
+//                    }
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                } catch (ClassNotFoundException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        });
+//        clientThread.start();
+//    }
 
-    private void listenToGameStart() {
-        Thread clientThread = new Thread(() -> {
-            while (true) {
-                String serverRespond = utils.getRespondFromServer(hs);
-                if (serverRespond.equals("gameStarted#")) {
-                    System.out.println("client on " + Thread.currentThread().getId() + ": game start");
-                    this.gameStarted = true;
-                    waitToTurn();
-                    getNTiles(7);
-                    turnEnded();
-                    break;
-                }
-            }
-        });
-        clientThread.start();
-    }
+
 
 
     void waitToTurn()  {
-        while (!myTurn) {
-        }// wait here as long as it is not my turn
-        System.out.println("client: start my turn");
+        Request r = null;// wait here as long as it is not my turn
+        try {
+            r = utils.getResponseFromServer1(hs.getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (r.requestCommand.equals("your_turn")) {
+            System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
+            this.myTurn = true;
+
+        }
+        else {
+            System.out.println("client on " + Thread.currentThread().getId());
+        }
+
+        //System.out.println("client: start my turn");
 
     }
 
@@ -136,14 +143,15 @@ public class GameClient implements Model{
 
     @Override
     public void turnEnded() {
-        out.println("turnEnded#");
-        out.flush();
+        Request r = new Request("command", "turnEnded", -1);
+        r.sendRequest(this.objectOutputStream);
     }
 
     public String getBoard() {
         waitToTurn();
-        this.out.println("get_board#");
-        this.out.flush();
+        Request r = new Request("command", "get_board", -1);
+        r.sendRequest(this.objectOutputStream);
+
         //wait for server to send score
         String serverRespond = utils.getRespondFromServer(hs);
         System.out.println("server respond: " + serverRespond);
@@ -158,21 +166,17 @@ public class GameClient implements Model{
 
     private Tile getTile() {
         waitToTurn();
-
-        this.out.println("get_tile#");
-        this.out.flush();
-        Request r = new Request("command", "getTile", -1);
+        Request r = new Request("command", "get_tile", -1);
         r.sendRequest(this.objectOutputStream);
 
         //wait for server to send score
         Tile tile = null;
-        try {
-            Request rr = utils.getResponseFromServer1(hs);
-            tile = (Tile) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+        while (!inRequestReady) {
         }
+        tile = (Tile) this.request.object;
+        this.inRequestReady = false;
         return tile;
+
     }
     public List<Tile> getNTiles(int n) {
         waitToTurn();
@@ -191,8 +195,7 @@ public class GameClient implements Model{
         waitToTurn();
         int score = -1;
         Request r = new Request("placeWord", "placeWord", w);
-        this.out.println("placeWord#" + w);
-        this.out.flush();
+        r.sendRequest(this.objectOutputStream);
         try {
             objectOutputStream.writeObject(w);
         } catch (IOException e) {
@@ -218,9 +221,9 @@ public class GameClient implements Model{
 
     public static class Request<T extends Serializable> implements Serializable {
 
-        private String requestType;
-        private String requestCommand;
-        private T object;
+        public String requestType;
+        public String requestCommand;
+        public T object;
 
         // Constructor
         public Request(String requestType, String requestCommand, T object) {
@@ -234,13 +237,6 @@ public class GameClient implements Model{
                 objectOutputStream.writeUTF(this.requestType);
                 objectOutputStream.writeUTF(this.requestCommand);
                 objectOutputStream.writeObject(this.object);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        public void sendRaw(ObjectOutputStream objectOutputStream)  {
-            try {
-                objectOutputStream.writeObject(this);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

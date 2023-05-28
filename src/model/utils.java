@@ -42,17 +42,24 @@ public class utils {
         return respond;
     }
 
-    public static final GameClient.Request getResponseFromServer1(Socket hs) throws IOException, ClassNotFoundException {
+    public static final GameClient.Request getResponseFromServer1(InputStream inputStream) throws IOException, ClassNotFoundException {
         String response = null;
         GameClient.Request request = null;
-
-        ObjectInputStream in = new ObjectInputStream(hs.getInputStream());
-        response = in.readUTF();
-        if (response != null) {
-            String command = in.readUTF();
-            Serializable data = (Serializable) in.readObject();
-            return new GameClient.Request(response, command, data);
+        while (response == null){
+            try {
+                ObjectInputStream in = new ObjectInputStream(inputStream);
+                response = in.readUTF();
+                if (response != null) {
+                    String command = in.readUTF();
+                    Serializable data = (Serializable) in.readObject();
+                    return new GameClient.Request(response, command, data);
+                }
+            } catch (SocketTimeoutException e) {
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         return request;
     }
 

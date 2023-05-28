@@ -134,7 +134,7 @@ public class GameHost{
         System.out.println("Game Host: Starting game...");
         allow_to_connect = false;
 
-        sentToAllClients("gameStarted#");
+        sentToAllClients("game_started");
         new Thread(this::handleClients).start();
     }
     private void sentToAllClients(String msg){
