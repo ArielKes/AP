@@ -1,6 +1,7 @@
 package test;
 
 import game_src.BookScrabbleHandler;
+import game_src.Tile;
 import game_src.Word;
 import model.GameClient;
 import model.GameHost;
@@ -84,16 +85,29 @@ public class GameClientTest {
         sleep(2000);
         g.startGame();
         sleep(2000);
-
-        c1[0].getBoard();
-        sleep(2000);
-        c1[0].endTurn();
-        c2[0].getTiles(3);
+        if(c3[0]!=null) {
+            c3[0].getScoreTable();
+            c3[0].endTurn();
+        }
+        c2[0].getClientTiles();
         c2[0].endTurn();
-        c0[0].checkWord(new Word(null, 3, 2, true));
+        c0[0].checkWord("hey");
         c0[0].endTurn();
         c3[0].getScoreTable();
         c3[0].endTurn();
+        c3[0].checkWord("no");
+        c3[0].endTurn();
+        c3[0].isMyTurn();
+        c3[0].endTurn();
+        c1[0].getScoreTable();
+        c1[0].endTurn();
+        c2[0].getBoard();
+        c2[0].endTurn();
+        c0[0].placeWord(new Word(null,1,2,true));
+        c0[0].endTurn();
+        //Tile tiles[] =
+        //c0[0].placeWord(new Word([new Tile('a',1)],1,2,true));
+        //c0[0].endTurn();
 
         while(true){
 
