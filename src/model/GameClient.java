@@ -78,6 +78,7 @@ public class GameClient implements Model{
 
     @Override
     public void endTurn() {
+        waitToTurn();
         Request<Integer> r = new Request<Integer>("turn_ended","command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
