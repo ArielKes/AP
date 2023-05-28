@@ -12,9 +12,7 @@ public class GameClientHandler implements ClientHandler{
     Scanner in;
     Socket clientSocket;
 
-
-    public GameClientHandler(Socket clientSocket){
-        this.clientSocket = clientSocket;
+    public GameClientHandler(Socket clientSocket) {
     }
 
 
@@ -23,9 +21,6 @@ public class GameClientHandler implements ClientHandler{
 
     }
 
-    @Override
-    public void handleClient(InputStream inFromClient, OutputStream outToClient, Socket gameServer) throws IOException {
-    }
 
     @Override
     public void handleClient(Socket clientSocket, Socket gameServer) throws IOException {
@@ -45,13 +40,13 @@ public class GameClientHandler implements ClientHandler{
                 }
 
                 else {
-                    System.out.println("Game Host: client request is: " + r);
+                    System.out.println("Game Host: client request is: " + res.requestCommand);
                     System.out.println("Game Host: sending client request to game server");
                     res.sendRequest(new ObjectOutputStream(gameServer.getOutputStream()));
                     // wait for game server response
                     System.out.println("Game Host: waiting for game server response");
                     GameClient.Request serverResponse = utils.getRequestFromInput(gameServer.getInputStream());
-                    System.out.println("Game Host: game server response is: " + serverResponse);
+                    System.out.println("Game Host: game server response is: " + serverResponse.requestCommand);
                     // send game server response to client
                     System.out.println("Game Host: sending game server response to client");
                     serverResponse.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
@@ -61,6 +56,12 @@ public class GameClientHandler implements ClientHandler{
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public void updateClient(String board) throws IOException {
+        GameClient.Request<Integer> r = new GameClient.Request<>("update","String",-1);
+        r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
+
     }
 
 

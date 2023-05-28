@@ -15,6 +15,7 @@ public interface Model {
     String getBoard() throws InterruptedException;
     HashMap<String, Integer> getScoreTable();
     List<Tile> getClientTiles();
+    void updateClient();
 
 
     // game functions

@@ -22,12 +22,15 @@ public class GameClient extends Observable implements Model{
     // Game variables
     String clientName;
     List<Tile> tiles = new ArrayList<>();
+    String boardString;
+    ScoreTable scoreTable;
 
 
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
         getNTiles(7);
-        placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+        int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+        this.endTurn();
 
     }
 
@@ -52,18 +55,25 @@ public class GameClient extends Observable implements Model{
             Request r ;
             try {
                 r = utils.getRequestFromInput(hs.getInputStream());
+                if (r.requestCommand.equals("your_turn")) {
+                    System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
+                    this.myTurn = true;
+
+                }
+                else if (r.requestCommand.equals("update")) {
+                    System.out.println("client on " + Thread.currentThread().getId() + ": got update command");
+                    this.getBoard();
+                    this.getScoreTable();
+                    Request res = new Request("update_done", "command", -1);
+                    res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+
+                }
+                else {
+                    System.out.println("client on " + Thread.currentThread().getId());
+                }
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            if (r.requestCommand.equals("your_turn")) {
-                System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
-                this.myTurn = true;
-
-            }
-            else {
-                System.out.println("client on " + Thread.currentThread().getId());
-            }
-
         }
     }
 
@@ -75,6 +85,7 @@ public class GameClient extends Observable implements Model{
 
     @Override
     public void endTurn() {
+        waitToTurn();
         Request<Integer> r = new Request<Integer>("turn_ended","command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
@@ -96,7 +107,8 @@ public class GameClient extends Observable implements Model{
         //wait for server to send score
         try {
             Request respond = utils.getRequestFromInput(hs.getInputStream());
-            System.out.println("server respond: " + respond.object);
+            System.out.println("client on" + Thread.currentThread().getId()+ " -server respond: " + respond.object);
+            boardString = (String) respond.object;
             return (String) respond.object;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -106,7 +118,24 @@ public class GameClient extends Observable implements Model{
 
     @Override
     public HashMap<String, Integer> getScoreTable() {
-        return null;
+        waitToTurn();
+        Request<Integer> r = new Request<Integer>("get_score_table", "command", -1);
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            Request respond = utils.getRequestFromInput(hs.getInputStream());
+            if (!respond.requestCommand.equals("score_table")) {
+                System.out.println("error in server respond, expected score table got: " + respond.requestCommand);
+                throw new RuntimeException();
+            }
+            ScoreTable s = (ScoreTable) respond.object;
+            this.scoreTable = s;
+            return s.scores;
+
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -115,7 +144,30 @@ public class GameClient extends Observable implements Model{
     }
 
     @Override
+    public void updateClient() {
+        waitToTurn();
+        Request r = new Request("update", "command", -1);
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            Request respond = utils.getRequestFromInput(hs.getInputStream());
+            if (!respond.requestCommand.equals("update_done")) {
+                System.out.println("error in server respond, expected update done got: " + respond.requestCommand);
+                throw new RuntimeException();
+            }
+            else {
+                System.out.println("client on " + Thread.currentThread().getId() + ": got update done");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
     public void addTile() {
+        waitToTurn();
+        getNTiles(1);
 
     }
 
@@ -147,9 +199,9 @@ public class GameClient extends Observable implements Model{
 
     @Override
     public int placeWord(Word w) {
-        // todo: implement return -1 if word is invalid
+        // if the score is positive, the word was placed successfully and the turn ended automatically
         waitToTurn();
-        Request<Word> r = new Request<>("place_word","Word",  w);
+        Request<Word> r = new Request<>("place_word", clientName, w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             //wait for server to send score
@@ -157,6 +209,12 @@ public class GameClient extends Observable implements Model{
             if (!serverRespond.requestCommand.equals("score")) {
                 System.out.println("error in server respond, expected score got: " + serverRespond.requestCommand);
                 throw new RuntimeException();
+            }
+            if ((int) serverRespond.object > 0) {
+                System.out.println("client on " + Thread.currentThread().getId() + ": place word successfully");
+                //todo check whats happening here if tiles contains a tile from w twice
+                this.tiles.remove(w.getTiles());
+                this.endTurn();
             }
             return (int) serverRespond.object;
         } catch (IOException | ClassNotFoundException e) {
@@ -169,7 +227,7 @@ public class GameClient extends Observable implements Model{
     @Override
     public boolean checkWord(String w) {
         waitToTurn();
-        Request<String> r = new Request<>("String", "check_word", w);
+        Request<String> r = new Request<>("check_word", clientName, w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             //wait for server to send score

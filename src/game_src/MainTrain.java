@@ -20,10 +20,6 @@ public class MainTrain {
             out.flush();
         }
 
-        @Override
-        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
-
-        }
 
         @Override
         public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {

@@ -81,10 +81,39 @@ public class GameHost{
                     if (clientSocket.getInputStream().available() >= 0) {
                         System.out.println("Game Host: Handling client: " + entry.getKey());
                         clientHandler.handleClient(clientSocket, bookServerSocket);
+                        updateClient();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private void updateClient() {
+        for (Map.Entry<Socket, GameClientHandler> entry : handlers.entrySet()) {
+            Socket clientSocket = entry.getKey();
+            ClientHandler clientHandler = entry.getValue();
+            try {
+                if (clientSocket.getInputStream().available() >= 0) {
+                    System.out.println("Game Host: updating client: " + entry.getKey());
+                    clientHandler.handleClient(clientSocket, bookServerSocket);
+                    GameClient.Request<Integer> request = new GameClient.Request<>("update", "update",-1);
+                    request.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
+                    GameClient.Request response = utils.getRequestFromInput(clientSocket.getInputStream());
+                    if (response.requestCommand.equals("update_done")) {
+                        System.out.println("Game Host: Client updated: " + entry.getKey());
+                    }
+                    else {
+                        System.out.println("Game Host: Client update failed: " + entry.getKey());
+                        throw new RuntimeException("Client update failed");
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
