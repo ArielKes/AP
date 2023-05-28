@@ -1,6 +1,7 @@
 package test;
 
 import game_src.BookScrabbleHandler;
+import game_src.Word;
 import model.GameClient;
 import model.GameClientHandler;
 import model.GameHost;
@@ -17,42 +18,64 @@ public class GameClientHandlerTest {
 
     public static void main(String[] args) throws IOException, InterruptedException {
 
-        GameClientHandler gch;
-        //gch.
-
-        System.
-                out.println("dummyA pid: "+ utils.getProcessId());
         game_src.MyServer s=new game_src.MyServer(getBookPort("src/resources/properties.txt"), new BookScrabbleHandler(),1);
         s.start();
         sleep(1000);
         GameHost g = new GameHost("src/resources/properties.txt");
         g.start();
         sleep(1000);
-//        GameClient c = new GameClient();
-//        c.runClient(1);
-        // create four threads for four clients
 
-        for (int i = 0; i < 5; i++) {
-            int finalI = i;
-            new Thread(() -> {
-                try {
-                    GameClient c = new GameClient(Integer.toString(finalI));
-                    c.endTurn();
+        final GameClient[] c0 = {null};
+        new Thread(() -> {
+            try {
+                c0[0] = new GameClient(Integer.toString(0));
+                c0[0].endTurn();
 
-                    sleep(2000);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }).start();
+                sleep(2000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
 
-        }
+        final GameClient[] c1 = {null};
+        new Thread(() -> {
+            try {
+                c1[0] = new GameClient(Integer.toString(0));
+                c1[0].endTurn();
+
+                sleep(2000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+
         sleep(2000);
         g.startGame();
-        while(true){
+        sleep(2000);
+        if(c1[0]!=null) {
+            c1[0].getScoreTable();
+            c1[0].endTurn();
         }
-        //System.out.println("done");
+        c0[0].getClientTiles();
+        c0[0].endTurn();
+        c0[0].checkWord("hey");
+        c0[0].endTurn();
+        c0[0].getScoreTable();
+        c0[0].endTurn();
+        c0[0].checkWord("no");
+        c0[0].endTurn();
+        c0[0].isMyTurn();
+        c0[0].endTurn();
+        c0[0].getScoreTable();
+        c0[0].endTurn();
+        c0[0].getBoard();
+        c0[0].endTurn();
+        c0[0].placeWord(new Word(null,1,2,true));
+        c0[0].endTurn();
     }
 
     public static int getBookPort(String propertiesFileName) throws IOException {
