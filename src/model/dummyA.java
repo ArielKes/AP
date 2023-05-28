@@ -1,8 +1,6 @@
 package model;
 
 import game_src.BookScrabbleHandler;
-import game_src.Word;
-import model.utilObjects.PlaceWord;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,7 +30,6 @@ public class dummyA {
             new Thread(() -> {
                 try {
                     GameClient c = new GameClient(Integer.toString(finalI));
-                    c.getNTiles(2);
                     c.endTurn();
 
                     sleep(2000);

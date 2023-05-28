@@ -32,8 +32,6 @@ public class GameClient implements Model{
         this.clientName = clientName;
         this.scoreTable = new ScoreTable();
         properties = utils.getProperties("src/resources/properties.txt");
-        //objectOutputStream = new ObjectOutputStream(hs.getOutputStream());
-        //this.listenToHost();
     }
 
 
@@ -45,11 +43,12 @@ public class GameClient implements Model{
     }
 
     public GameClient(String clientName, String hostIpAddress) throws IOException {
+        properties = utils.getProperties("src/resources/properties.txt");
         hs = new Socket(hostIpAddress, Integer.parseInt(properties.get("game_host.port")));
         this.basicConstructor(clientName);
     }
 
-    int placeWordOnBoard(Word w) throws IOException, InterruptedException {
+    int placeWordOnBoard(Word w) throws IOException {
         // -1 if word is not valid
         // -2 if word is valid but not in dictionary
         // n if word is valid and in dictionary and n is the score
@@ -69,12 +68,10 @@ public class GameClient implements Model{
 
     void waitToTurn()  {
         if(!this.myTurn) {
-            Request r = null;// wait here as long as it is not my turn
+            Request r ;
             try {
                 r = utils.getResponseFromServer1(hs.getInputStream());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
             if (r.requestCommand.equals("your_turn")) {
@@ -116,9 +113,14 @@ public class GameClient implements Model{
         }
 
         //wait for server to send score
-        String serverRespond = utils.getRespondFromServer(hs);
-        System.out.println("server respond: " + serverRespond);
-        return serverRespond;
+        try {
+            Request respond = utils.getResponseFromServer1(hs.getInputStream());
+            System.out.println("server respond: " + respond.object);
+            return (String) respond.object;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -157,13 +159,14 @@ public class GameClient implements Model{
         else return (Tile) respond.object;
 
     }
-    public List<Tile> getNTiles(int n) {
+    private List<Tile> getNTiles(int n) {
         waitToTurn();
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
         return tiles;
     }
+
 
     @Override
     public int placeWord(Word w) {
@@ -172,7 +175,7 @@ public class GameClient implements Model{
         // n if word is valid and in dictionary and n is the score
         waitToTurn();
         int score = -1;
-        Request r = new Request("placeWord", "placeWord", w);
+        Request<Word> r = new Request<>("placeWord", "placeWord", w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
         } catch (IOException e) {
