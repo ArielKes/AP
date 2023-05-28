@@ -32,7 +32,9 @@ public class GameController extends BaseController implements Observer,Initializ
     @FXML
     Button testButton;
     @FXML
-    Label score;
+    Text score;
+    @FXML
+    Text turn;
     private ArrayList<Button> buttons;
 
     @FXML
@@ -129,6 +131,7 @@ public class GameController extends BaseController implements Observer,Initializ
         scroesMap.put("C", 3);
         setScores(scroesMap);
         updateTilesArray(0, 0);
+        displayTurn("Player 2");
     }
 
     private void updateTilesArray(int index, int amount){
@@ -280,6 +283,9 @@ public class GameController extends BaseController implements Observer,Initializ
         }
     }
 
+    public void displayTurn(String name){
+        turn.setText("Turn: " + name);
+    }
 
 
     public void setViewModel(ViewModel vm){
