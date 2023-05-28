@@ -17,13 +17,15 @@ public class GameClient extends Observable implements Model{
 
     // administration variables
     private volatile boolean myTurn = false;
-
+    private volatile boolean update = false;
+    private volatile boolean isGameStarted = false;
 
     // Game variables
     String clientName;
     List<Tile> tiles = new ArrayList<>();
     String boardString;
     ScoreTable scoreTable;
+
 
 
     private void basicConstructor(String clientName) throws IOException {
@@ -51,7 +53,7 @@ public class GameClient extends Observable implements Model{
 
 
     void waitToTurn()  {
-        if(!this.myTurn) {
+        if(!this.myTurn && !this.update) {
             Request r ;
             try {
                 r = utils.getRequestFromInput(hs.getInputStream());
@@ -62,10 +64,14 @@ public class GameClient extends Observable implements Model{
                 }
                 else if (r.requestCommand.equals("update")) {
                     System.out.println("client on " + Thread.currentThread().getId() + ": got update command");
+                    this.update = true;
                     this.getBoard();
                     this.getScoreTable();
+                    this.isGameStarted = true;
                     Request res = new Request("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+                    this.update = false;
+                    waitToTurn();
 
                 }
                 else {
@@ -98,19 +104,15 @@ public class GameClient extends Observable implements Model{
     public String getBoard() {
         waitToTurn();
         Request<Integer> r = new Request<Integer>("get_board", "command", -1);
-        try {
-            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         //wait for server to send score
         try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             Request respond = utils.getRequestFromInput(hs.getInputStream());
-            System.out.println("client on" + Thread.currentThread().getId()+ " -server respond: " + respond.object);
+            System.out.println("client on " + Thread.currentThread().getId()+ " - server respond: " + respond.object);
             boardString = (String) respond.object;
             return (String) respond.object;
         } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
@@ -162,6 +164,11 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public boolean isGameStarted() {
+        return this.isGameStarted;
     }
 
     @Override
@@ -242,6 +249,8 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException(e);
         }
     }
+
+
 
 
 

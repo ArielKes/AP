@@ -1,4 +1,4 @@
 game_server.port=8001
 game_server.ip=127.0.0.1
-game_host.port=7001
-game_host.ip=127.0.0.1
+game_host.port=8000
+game_host.ip=192.168.1.169

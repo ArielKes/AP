@@ -16,6 +16,7 @@ public interface Model {
     HashMap<String, Integer> getScoreTable();
     List<Tile> getClientTiles();
     void updateClient();
+    boolean isGameStarted();
 
 
     // game functions
