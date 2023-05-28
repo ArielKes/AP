@@ -85,7 +85,8 @@ public class ViewModel extends Observable implements Observer {
         return t;
     }
 
-    public void trySetWord(){
+    public boolean trySetWord(){
+        boolean valid = false;
         int[] col_arr = parseIntString(col.get());
         int[] row_arr = parseIntString(row.get());
         if(checkValidity(col_arr ,row_arr)){
@@ -102,8 +103,10 @@ public class ViewModel extends Observable implements Observer {
             }
             System.out.println("");
             this.model.tryPlaceWord(w);
+            valid = true;
         }
         vertical = true;
+        return valid;
     }
 
     @Override

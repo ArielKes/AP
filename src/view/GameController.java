@@ -74,12 +74,11 @@ public class GameController extends BaseController implements Observer,Initializ
         for (Button b : buttons) {
             setupButton(b);
             b.setFocusTraversable(false);
-            b.setTooltip(new Tooltip("0"));
-            String s = b.getText();
-            tilesAmount.add(0);
+            tilesAmount.add(1);
         }
+        updateTilesDisplay();
         testButton.setOnMouseClicked(this::test);
-        addTile.setOnMouseClicked(this::updateTiles);
+        addTile.setOnMouseClicked(this::addTile);
         //initialize gridPane
         gridPane.setGridLinesVisible(true);
         for (int row = 0; row < 15; row++) {
@@ -89,10 +88,10 @@ public class GameController extends BaseController implements Observer,Initializ
                 // coloring according to bonus
                 switch (bonus[row][col]){
                     case 'r':
-                        r.setFill(Color.RED);
+                        r.setFill(Color.INDIANRED);
                         break;
                     case 'g':
-                        r.setFill(Color.GREEN);
+                        r.setFill(Color.LIGHTGREEN);
                         break;
                     case 'y':
                         r.setFill(Color.YELLOW);
@@ -112,7 +111,10 @@ public class GameController extends BaseController implements Observer,Initializ
 
     }
 
-    private void updateTiles(MouseEvent mouseEvent) {
+//    TODO: fill according to model
+    private void addTile(MouseEvent mouseEvent) {}
+
+    private void updateTilesDisplay() {
         for (int i = 0; i < tilesAmount.size(); i++) {
             Button b = buttons.get(i);
             b.setTooltip(new Tooltip(String.valueOf(tilesAmount.get(i))));
@@ -126,13 +128,20 @@ public class GameController extends BaseController implements Observer,Initializ
         scroesMap.put("B", 3);
         scroesMap.put("C", 3);
         setScores(scroesMap);
-        tilesAmount.set(0, 5);
+        updateTilesArray(0, 0);
+    }
+
+    private void updateTilesArray(int index, int amount){
+        tilesAmount.set(index, amount);
+        updateTilesDisplay();
     }
 
     private void setupButton(Button button) {
         button.setOnMouseClicked(mouseEvent -> {
             resetButtonsView();
-            setPlayerChoice(button);
+            if (checkTilesLeft(button.getText().charAt(0) - '0' - 17)){
+                setPlayerChoice(button);
+            }
             button.setDisable(true);
         });
     }
@@ -160,6 +169,7 @@ public class GameController extends BaseController implements Observer,Initializ
                 word.set(word.get()+letter.getText());
                 // reset letter
                 letterChosen = false;
+
             }
         }
     }
@@ -199,6 +209,19 @@ public class GameController extends BaseController implements Observer,Initializ
         timeline.play();
     }
 
+    private boolean checkTilesLeft(int index){
+        return tilesAmount.get(index) > 0;
+    }
+
+    private ArrayList<Integer> getWordCoordinates(){
+        ArrayList<Integer> coordinates = new ArrayList<>();
+        coordinates.add(Integer.parseInt(String.valueOf(rows.get().charAt(0))));
+        coordinates.add(Integer.parseInt(String.valueOf(cols.get().charAt(0))));
+        coordinates.add(Integer.parseInt(String.valueOf(rows.get().charAt(rows.get().length()-1))));
+        coordinates.add(Integer.parseInt(String.valueOf(cols.get().charAt(cols.get().length()-1))));
+        return coordinates;
+    }
+
 //    ************************************************** API **************************************************
 
     public void resetButtonsView(){
@@ -232,7 +255,8 @@ public class GameController extends BaseController implements Observer,Initializ
 
     public void checkButtonPushed(){
         check.set(true);
-        vm.trySetWord();
+        ArrayList<Integer> arr = getWordCoordinates();
+        wordVerifiedDisplay(vm.trySetWord(), arr.get(0), arr.get(1), arr.get(2), arr.get(3));
         System.out.println(vm.word.get());
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
         System.out.println(vm.model.board.get_as_string());
