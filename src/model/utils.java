@@ -2,9 +2,6 @@ package model;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 
 public class utils {
@@ -24,25 +21,7 @@ public class utils {
     }
 
 
-    public static final String getRespondFromServer(Socket hs) {
-
-        String respond = null;
-        while (respond == null){
-            try {
-                hs.setSoTimeout(1000);
-                BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
-                respond = in.readLine();
-                if (respond != null) break;
-            } catch (SocketTimeoutException e) {
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return respond;
-    }
-
-    public static final GameClient.Request getResponseFromServer1(InputStream inputStream) throws IOException, ClassNotFoundException {
+    public static final GameClient.Request getRequestFromInput(InputStream inputStream) throws IOException, ClassNotFoundException {
         String response = null;
         GameClient.Request request = null;
         while (inputStream.available() == 0) {
@@ -52,33 +31,16 @@ public class utils {
                 e.printStackTrace();
             }
         }
-
         ObjectInputStream in = new ObjectInputStream(inputStream);
         response = in.readUTF();
         if (response != null) {
             String command = in.readUTF();
             Serializable data = (Serializable) in.readObject();
-            return new GameClient.Request(response, command, data);
+            return new GameClient.Request(command,response, data);
         }
 
 
         return request;
     }
 
-    public static final String getRespondFromServer(InputStream inFromclient) {
-
-        String respond = null;
-        while (respond == null){
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(inFromclient));
-                respond = in.readLine();
-                if (respond != null) break;
-            } catch (SocketTimeoutException e) {
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return respond;
-    }
 }
