@@ -20,24 +20,6 @@ public class utils {
         return p;
     }
 
-//
-//    public static final String getRespondFromServer(Socket hs) {
-//
-//        String respond = null;
-//        while (respond == null){
-//            try {
-//                hs.setSoTimeout(1000);
-//                BufferedReader in = new BufferedReader(new InputStreamReader(hs.getInputStream()));
-//                respond = in.readLine();
-//                if (respond != null) break;
-//            } catch (SocketTimeoutException e) {
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return respond;
-//    }
 
     public static final GameClient.Request getRequestFromInput(InputStream inputStream) throws IOException, ClassNotFoundException {
         String response = null;
@@ -61,20 +43,4 @@ public class utils {
         return request;
     }
 
-//    public static final String getRespondFromServer(InputStream inFromclient) {
-//
-//        String respond = null;
-//        while (respond == null){
-//            try {
-//                BufferedReader in = new BufferedReader(new InputStreamReader(inFromclient));
-//                respond = in.readLine();
-//                if (respond != null) break;
-//            } catch (SocketTimeoutException e) {
-//
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return respond;
-//    }
 }

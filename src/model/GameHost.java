@@ -134,11 +134,6 @@ public class GameHost{
         System.out.println("Game Host: Starting game...");
         allow_to_connect = false;
 
-//        try {
-//            sentToAllClients("game_started");
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
         new Thread(this::handleClients).start();
     }
     private void sentToAllClients(String msg) throws IOException {

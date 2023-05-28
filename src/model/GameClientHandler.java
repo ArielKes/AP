@@ -31,7 +31,7 @@ public class GameClientHandler implements ClientHandler{
     public void handleClient(Socket clientSocket, Socket gameServer) throws IOException {
 
         //send input from client to server and vice versa
-        GameClient.Request<Integer> r = new GameClient.Request<>("text", "your_turn", -1);
+        GameClient.Request<Integer> r = new GameClient.Request<>( "your_turn","String",-1);
         r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
         // wait to client to send 'client is done'
         while (true) {
@@ -65,7 +65,7 @@ public class GameClientHandler implements ClientHandler{
 
 
     void sendToClient(String msg) throws IOException {
-        GameClient.Request<Integer> r = new GameClient.Request<>("text",msg,-1);
+        GameClient.Request<Integer> r = new GameClient.Request<>(msg,"String",-1);
         r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
     }
 

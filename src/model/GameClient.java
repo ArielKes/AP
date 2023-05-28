@@ -23,15 +23,14 @@ public class GameClient implements Model{
 
     // Game variables
     String clientName;
-    //Scanner in;
-    ScoreTable scoreTable;
     List<Tile> tiles = new ArrayList<>();
 
 
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
-        this.scoreTable = new ScoreTable();
-        properties = utils.getProperties("src/resources/properties.txt");
+        getNTiles(7);
+        placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
+
     }
 
 
@@ -78,7 +77,7 @@ public class GameClient implements Model{
 
     @Override
     public void endTurn() {
-        Request<Integer> r = new Request<Integer>("command", "turn_ended", -1);
+        Request<Integer> r = new Request<Integer>("turn_ended","command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
         } catch (IOException e) {
@@ -89,7 +88,7 @@ public class GameClient implements Model{
 
     public String getBoard() {
         waitToTurn();
-        Request<Integer> r = new Request<Integer>("command", "get_board", -1);
+        Request<Integer> r = new Request<Integer>("get_board", "command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
         } catch (IOException e) {
@@ -125,7 +124,7 @@ public class GameClient implements Model{
 
     private Tile getTile() {
         waitToTurn();
-        Request r = new Request("command", "get_tile", -1);
+        Request r = new Request( "get_tile","command", -1);
         Request respond;
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
@@ -152,12 +151,12 @@ public class GameClient implements Model{
     public int placeWord(Word w) {
         // todo: implement return -1 if word is invalid
         waitToTurn();
-        Request<Word> r = new Request<>("Word", "place_word", w);
+        Request<Word> r = new Request<>("place_word","Word",  w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             //wait for server to send score
             Request serverRespond = utils.getRequestFromInput(hs.getInputStream());
-            if (!serverRespond.requestType.equals("score")) {
+            if (!serverRespond.requestCommand.equals("score")) {
                 System.out.println("error in server respond, expected score got: " + serverRespond.requestCommand);
                 throw new RuntimeException();
             }
@@ -192,20 +191,21 @@ public class GameClient implements Model{
 
     public static class Request<T extends Serializable> implements Serializable {
 
-        public String requestType;
         public String requestCommand;
         public T object;
+        public String requestArgs;
+
 
         // Constructor
-        public Request(String requestType, String requestCommand, T object) {
-            this.requestType = requestType;
+        public Request(String requestCommand,String requestArgs, T object) {
             this.requestCommand = requestCommand;
             this.object = object;
+            this.requestArgs = requestArgs;
         }
 
         public void sendRequest(ObjectOutputStream objectOutputStream)  {
             try {
-                objectOutputStream.writeUTF(this.requestType);
+                objectOutputStream.writeUTF(this.requestArgs);
                 objectOutputStream.writeUTF(this.requestCommand);
                 objectOutputStream.writeObject(this.object);
                 //objectOutputStream.close();
