@@ -9,15 +9,15 @@ import java.util.List;
 public interface Model {
 
     // administration functions
-    boolean isGameStarted();
+
     boolean isMyTurn();
-    void turnEnded();
+    void endTurn();
     String getBoard() throws InterruptedException;
     HashMap<String, Integer> getScoreTable();
 
 
     // game functions
-    List<Tile> getNTiles(int n);
+    List<Tile> getTiles(int n);
     int placeWord (Word w);
     boolean checkWord (Word w);
 

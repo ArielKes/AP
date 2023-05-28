@@ -78,7 +78,7 @@ public class GameHost{
                 Socket clientSocket = entry.getKey();
                 ClientHandler clientHandler = entry.getValue();
                 try {
-                    if (clientSocket.getInputStream().available() > 0) {
+                    if (clientSocket.getInputStream().available() >= 0) {
                         System.out.println("Game Host: Handling client: " + entry.getKey());
                         clientHandler.handleClient(clientSocket, bookServerSocket);
                     }
@@ -134,10 +134,14 @@ public class GameHost{
         System.out.println("Game Host: Starting game...");
         allow_to_connect = false;
 
-        sentToAllClients("game_started");
+//        try {
+//            sentToAllClients("game_started");
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         new Thread(this::handleClients).start();
     }
-    private void sentToAllClients(String msg){
+    private void sentToAllClients(String msg) throws IOException {
         for (Map.Entry<Socket, GameClientHandler> entry : handlers.entrySet()) {
             Socket clientSocket = entry.getKey();
             GameClientHandler clientHandler = entry.getValue();

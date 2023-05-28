@@ -13,13 +13,10 @@ import java.util.Scanner;
 import java.io.*;
 
 public class BookScrabbleHandler implements ClientHandler{
-    PrintWriter out;
-    Scanner in;
-    ObjectInputStream ois = null;
-    ObjectOutputStream oos = null;
     DictionaryManager dm;
     Board board;
-
+    OutputStream out;
+    InputStream in;
 
     Tile.Bag bag;
     public BookScrabbleHandler(){
@@ -32,7 +29,7 @@ public class BookScrabbleHandler implements ClientHandler{
         //get input as string of args with "," as separators
         //for example: input:"command, text file 1, ..., text file i, question for the dictionary"
         String[] parseInput = input.split(",");
-        System.out.println("gameServer printing "+in);
+//        System.out.println("gameServer printing "+in);
         //the first arg in the input is command to the Dictionary Manager
         String command = parseInput[0];
 
@@ -70,49 +67,37 @@ public class BookScrabbleHandler implements ClientHandler{
     }
 
     private void send_tiles() {
-        GameClient.Request r = new GameClient.Request("tile","sent_tile",bag.getRand());
-        r.sendRequest(oos);
+        GameClient.Request<Tile> r = new GameClient.Request<>("tile","sent_tile",bag.getRand());
+        try {
+            r.sendRequest(new ObjectOutputStream(out));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private  void place(){
         Word w = null;
-        try {
-            w = (Word) ois.readObject();
-            int score = board.tryPlaceWord(w);
-            if(score != -1){
-                out.println("score#"+score);
-                out.flush();
-            }
-            else{
-                out.println("not placed#");
-                out.flush();
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
 
 
 
     }
     private void send_board(){
         System.out.println("sending board");
-        out.println(board.get_as_string());
-        out.flush();
+//        out.println(board.get_as_string());
+//        out.flush();
     }
 
     @Override
-    public void handleClient(InputStream inFromclient, OutputStream outToClient) throws IOException {
+    public void handleClient(InputStream inFromClient, OutputStream outToClient) throws IOException {
         // get input from client (Game Host) and send it to the Dictionary Manager or the Board
-        out = new PrintWriter(outToClient);
-        in = new Scanner(inFromclient);
-//        this.ois = new ObjectInputStream(inFromclient);
-        this.oos = new ObjectOutputStream(outToClient);
+        this.out = outToClient;
+        this.in = inFromClient;
+
         while (true) {
             GameClient.Request clientRequest = null;
             try {
-                clientRequest = utils.getResponseFromServer1(inFromclient);
+                clientRequest = utils.getResponseFromServer1(inFromClient);
                 System.out.println("Game Server: client request is - " + clientRequest);
                 parseRequest(clientRequest);
             } catch (ClassNotFoundException e) {
@@ -134,7 +119,7 @@ public class BookScrabbleHandler implements ClientHandler{
     @Override
     public void close() {
         dm.closeLibrary();
-        in.close();
-        out.close();
+//        in.close();
+//        out.close();
     }
 }

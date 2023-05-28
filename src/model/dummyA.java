@@ -33,8 +33,13 @@ public class dummyA {
                 try {
                     GameClient c = new GameClient(Integer.toString(finalI));
                     c.getNTiles(2);
+                    c.endTurn();
+
+                    sleep(2000);
                 } catch (IOException e) {
                     e.printStackTrace();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
             }).start();
 
