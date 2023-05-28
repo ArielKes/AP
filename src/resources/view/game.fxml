@@ -15,7 +15,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.GameController">
    <top>
-      <MenuBar prefHeight="36.0" prefWidth="693.0" BorderPane.alignment="CENTER">
+      <MenuBar prefHeight="36.0" prefWidth="650.0" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
@@ -39,7 +39,7 @@
    <bottom>
       <HBox spacing="5.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="SCORE:" fx:id="score"/>
+            <Label fx:id="score" text="SCORE:" />
          </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -47,9 +47,9 @@
       </HBox>
    </bottom>
    <left>
-      <HBox BorderPane.alignment="CENTER">
+      <HBox prefHeight="383.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox spacing="2.0">
+            <VBox prefHeight="234.0" prefWidth="50.0" spacing="2.0">
                <children>
                   <Button fx:id="A" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="A" />
                   <Button fx:id="B" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="B" />
@@ -65,6 +65,7 @@
                   <Button fx:id="L" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="L" />
                   <Button fx:id="M" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="M" />
                   <Button fx:id="testButton" mnemonicParsing="false" prefHeight="24.0" prefWidth="50.0" text="Button" />
+                  <Button fx:id="addTile" mnemonicParsing="false" prefHeight="24.0" prefWidth="54.0" text="Tile" />
                </children>
             </VBox>
             <VBox spacing="2.0">
@@ -82,7 +83,7 @@
                   <Button fx:id="X" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="X" />
                   <Button fx:id="Y" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Y" />
                   <Button fx:id="Z" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Z" />
-                  <Button mnemonicParsing="false" onAction="#checkButtonPushed" prefHeight="26.0" prefWidth="50.0" text="check" />
+                  <Button mnemonicParsing="false" onAction="#checkButtonPushed" prefHeight="22.0" prefWidth="50.0" text="check" />
                </children>
             </VBox>
          </children>

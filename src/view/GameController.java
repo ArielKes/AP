@@ -1,9 +1,8 @@
 package view;
 
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,6 +11,8 @@ import java.util.*;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -27,7 +28,7 @@ import view_model.ViewModel;
 
 public class GameController extends BaseController implements Observer,Initializable {
     @FXML
-    private Button A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z;
+    private Button A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,addTile;
     @FXML
     Button testButton;
     @FXML
@@ -43,7 +44,9 @@ public class GameController extends BaseController implements Observer,Initializ
     StringProperty cols = new SimpleStringProperty();
     StringProperty rows = new SimpleStringProperty();
     StringProperty word = new SimpleStringProperty();
-    private char tilesArray[][] = new char[15][15];
+    ObservableList<Integer> tilesAmountlist = new SimpleListProperty<>();
+    ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountlist);
+    private ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
     private Text letter;
     ViewModel vm;
     private final char[][] bonus = {
@@ -68,12 +71,14 @@ public class GameController extends BaseController implements Observer,Initializ
     public void initialize(URL url, ResourceBundle resourceBundle) {
         buttons = new ArrayList<>(Arrays.asList(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z));
         resetChoice();
-
-        buttons.forEach(button ->{
-            setupButton(button);
-            button.setFocusTraversable(false);
-        });
+        for (Button b : buttons) {
+            setupButton(b);
+            b.setFocusTraversable(false);
+            tilesAmount.add(1);
+        }
+        updateTilesDisplay();
         testButton.setOnMouseClicked(this::test);
+        addTile.setOnMouseClicked(this::addTile);
         //initialize gridPane
         gridPane.setGridLinesVisible(true);
         for (int row = 0; row < 15; row++) {
@@ -83,10 +88,10 @@ public class GameController extends BaseController implements Observer,Initializ
                 // coloring according to bonus
                 switch (bonus[row][col]){
                     case 'r':
-                        r.setFill(Color.RED);
+                        r.setFill(Color.INDIANRED);
                         break;
                     case 'g':
-                        r.setFill(Color.GREEN);
+                        r.setFill(Color.LIGHTGREEN);
                         break;
                     case 'y':
                         r.setFill(Color.YELLOW);
@@ -106,14 +111,37 @@ public class GameController extends BaseController implements Observer,Initializ
 
     }
 
+//    TODO: fill according to model
+    private void addTile(MouseEvent mouseEvent) {}
+
+    private void updateTilesDisplay() {
+        for (int i = 0; i < tilesAmount.size(); i++) {
+            Button b = buttons.get(i);
+            b.setTooltip(new Tooltip(String.valueOf(tilesAmount.get(i))));
+        }
+    }
+
     private void test(Event event) {
         updateBoardDisplay();
+        Map<String, Integer> scroesMap = new HashMap<>();
+        scroesMap.put("A", 1);
+        scroesMap.put("B", 3);
+        scroesMap.put("C", 3);
+        setScores(scroesMap);
+        updateTilesArray(0, 0);
+    }
+
+    private void updateTilesArray(int index, int amount){
+        tilesAmount.set(index, amount);
+        updateTilesDisplay();
     }
 
     private void setupButton(Button button) {
         button.setOnMouseClicked(mouseEvent -> {
             resetButtonsView();
-            setPlayerChoice(button);
+            if (checkTilesLeft(button.getText().charAt(0) - '0' - 17)){
+                setPlayerChoice(button);
+            }
             button.setDisable(true);
         });
     }
@@ -141,6 +169,7 @@ public class GameController extends BaseController implements Observer,Initializ
                 word.set(word.get()+letter.getText());
                 // reset letter
                 letterChosen = false;
+
             }
         }
     }
@@ -180,6 +209,19 @@ public class GameController extends BaseController implements Observer,Initializ
         timeline.play();
     }
 
+    private boolean checkTilesLeft(int index){
+        return tilesAmount.get(index) > 0;
+    }
+
+    private ArrayList<Integer> getWordCoordinates(){
+        ArrayList<Integer> coordinates = new ArrayList<>();
+        coordinates.add(Integer.parseInt(String.valueOf(rows.get().charAt(0))));
+        coordinates.add(Integer.parseInt(String.valueOf(cols.get().charAt(0))));
+        coordinates.add(Integer.parseInt(String.valueOf(rows.get().charAt(rows.get().length()-1))));
+        coordinates.add(Integer.parseInt(String.valueOf(cols.get().charAt(cols.get().length()-1))));
+        return coordinates;
+    }
+
 //    ************************************************** API **************************************************
 
     public void resetButtonsView(){
@@ -213,11 +255,13 @@ public class GameController extends BaseController implements Observer,Initializ
 
     public void checkButtonPushed(){
         check.set(true);
-        vm.trySetWord();
+        ArrayList<Integer> arr = getWordCoordinates();
+        wordVerifiedDisplay(vm.trySetWord(), arr.get(0), arr.get(1), arr.get(2), arr.get(3));
         System.out.println(vm.word.get());
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
         //System.out.println(vm.model.board.get_as_string());
         resetChoice();
+        updateBoardDisplay();
     }
 
     public void updateBoardDisplay(){
@@ -244,6 +288,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
+//        vm.tilesAmount.bind(this.tilesAmount);
     }
 
 

@@ -81,11 +81,12 @@ public class ViewModel extends Observable implements Observer {
         }
         Tile[] t = new Tile[newWord.size()];
         for(int i=0 ; i<newWord.size() ; i++)
-            t[i] = null;//model.bag.getTile(newWord.get(i));
+            t[i] = model.bag.getTile(newWord.get(i));
         return t;
     }
 
-    public void trySetWord(){
+    public boolean trySetWord(){
+        boolean valid = false;
         int[] col_arr = parseIntString(col.get());
         int[] row_arr = parseIntString(row.get());
         if(checkValidity(col_arr ,row_arr)){
@@ -101,16 +102,17 @@ public class ViewModel extends Observable implements Observer {
                     System.out.print("_");
             }
             System.out.println("");
-           // this.model.tryPlaceWord(w);
+            this.model.tryPlaceWord(w);
+            valid = true;
         }
         vertical = true;
+        return valid;
     }
 
     @Override
     public void update(Observable o, Object arg) {
         if(o==model){
-           // this.board.set(model.board.get_as_string());
+            this.board.set(model.board.get_as_string());
         }
     }
-
 }
