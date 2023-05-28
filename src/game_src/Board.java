@@ -208,7 +208,9 @@ public class Board {
 	}
 	
 	public int tryPlaceWord(Word w,DictionaryManager dm) {
-		
+
+		if(!dictionaryLegal(dm,w))
+			return -1;
 		Tile[] ts = w.getTiles();
 		int row=w.getRow();
 		int col=w.getCol();
