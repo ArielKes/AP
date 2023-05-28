@@ -14,12 +14,13 @@ public interface Model {
     void endTurn();
     String getBoard() throws InterruptedException;
     HashMap<String, Integer> getScoreTable();
+    List<Tile> getClientTiles();
 
 
     // game functions
-    List<Tile> getTiles(int n);
+    void addTile();
     int placeWord (Word w);
-    boolean checkWord (Word w);
+    boolean checkWord (String w);
 
 
 }

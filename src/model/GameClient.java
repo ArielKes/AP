@@ -48,29 +48,13 @@ public class GameClient implements Model{
         this.basicConstructor(clientName);
     }
 
-    int placeWordOnBoard(Word w) throws IOException {
-        // -1 if word is not valid
-        // -2 if word is valid but not in dictionary
-        // n if word is valid and in dictionary and n is the score
-        waitToTurn();
-        int score = -1;
-        Request<Word> r = new Request<>("command","place_word", w);
-        r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
-        //wait for server to send score
-        String serverRespond = utils.getRespondFromServer(hs);
-        if (!serverRespond.split("#")[0].equals("score")) {
-            System.out.println("error in server respond, expected score got: " + serverRespond.split("#")[0]);
-            throw new IOException();
-        }
-        return Integer.parseInt(serverRespond.split("#")[1]);
-    }
 
 
     void waitToTurn()  {
         if(!this.myTurn) {
             Request r ;
             try {
-                r = utils.getResponseFromServer1(hs.getInputStream());
+                r = utils.getRequestFromInput(hs.getInputStream());
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -114,7 +98,7 @@ public class GameClient implements Model{
 
         //wait for server to send score
         try {
-            Request respond = utils.getResponseFromServer1(hs.getInputStream());
+            Request respond = utils.getRequestFromInput(hs.getInputStream());
             System.out.println("server respond: " + respond.object);
             return (String) respond.object;
         } catch (IOException | ClassNotFoundException e) {
@@ -129,27 +113,24 @@ public class GameClient implements Model{
     }
 
     @Override
-    public List<Tile> getTiles(int n) {
+    public List<Tile> getClientTiles() {
         return this.tiles;
+    }
+
+    @Override
+    public void addTile() {
+
     }
 
 
     private Tile getTile() {
         waitToTurn();
         Request r = new Request("command", "get_tile", -1);
-        try {
-            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        //wait for server to send score
         Request respond;
         try {
-            respond = utils.getResponseFromServer1(hs.getInputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            respond = utils.getRequestFromInput(hs.getInputStream());
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
         if (!respond.requestCommand.equals("sent_tile")) {
@@ -159,42 +140,52 @@ public class GameClient implements Model{
         else return (Tile) respond.object;
 
     }
-    private List<Tile> getNTiles(int n) {
+    private void getNTiles(int n) {
         waitToTurn();
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
-        return tiles;
     }
 
 
     @Override
     public int placeWord(Word w) {
-        // -1 if word is not valid
-        // -2 if word is valid but not in dictionary
-        // n if word is valid and in dictionary and n is the score
+        // todo: implement return -1 if word is invalid
         waitToTurn();
-        int score = -1;
-        Request<Word> r = new Request<>("placeWord", "placeWord", w);
+        Request<Word> r = new Request<>("Word", "place_word", w);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
-        } catch (IOException e) {
+            //wait for server to send score
+            Request serverRespond = utils.getRequestFromInput(hs.getInputStream());
+            if (!serverRespond.requestType.equals("score")) {
+                System.out.println("error in server respond, expected score got: " + serverRespond.requestCommand);
+                throw new RuntimeException();
+            }
+            return (int) serverRespond.object;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
-        //wait for server to send score
-        String serverRespond = utils.getRespondFromServer(hs);
-        if (!serverRespond.split("#")[0].equals("score")) {
-            System.out.println("error in server respond, expected score got: " + serverRespond.split("#")[0]);
-            throw new RuntimeException();
-
-        }
-        return Integer.parseInt(serverRespond.split("#")[1]);
     }
 
 
     @Override
-    public boolean checkWord(Word w) {
-        return false;
+    public boolean checkWord(String w) {
+        waitToTurn();
+        Request<String> r = new Request<>("String", "check_word", w);
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            //wait for server to send score
+            Request serverRespond = utils.getRequestFromInput(hs.getInputStream());
+            if (!serverRespond.requestCommand.equals("checked_word")) {
+                System.out.println("error in server respond, expected boolean got: " + serverRespond.requestCommand);
+                throw new RuntimeException();
+            }
+            return (boolean) serverRespond.object;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 
