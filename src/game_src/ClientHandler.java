@@ -7,7 +7,6 @@ import java.net.Socket;
 
 public interface ClientHandler {
 	void handleClient(InputStream inFromclient, OutputStream outToClient) throws IOException;
-	void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) throws IOException;
 	void handleClient(Socket clientSocket, Socket serverSocket) throws IOException;
 	void close();
 }

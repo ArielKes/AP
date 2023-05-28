@@ -24,6 +24,8 @@ public class GameClient implements Model{
     // Game variables
     String clientName;
     List<Tile> tiles = new ArrayList<>();
+    String boardString;
+    ScoreTable scoreTable;
 
 
     private void basicConstructor(String clientName) throws IOException {
@@ -55,18 +57,25 @@ public class GameClient implements Model{
             Request r ;
             try {
                 r = utils.getRequestFromInput(hs.getInputStream());
+                if (r.requestCommand.equals("your_turn")) {
+                    System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
+                    this.myTurn = true;
+
+                }
+                else if (r.requestCommand.equals("update")) {
+                    System.out.println("client on " + Thread.currentThread().getId() + ": got update command");
+                    this.getBoard();
+                    this.getScoreTable();
+                    Request res = new Request("update_done", "command", -1);
+                    res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+
+                }
+                else {
+                    System.out.println("client on " + Thread.currentThread().getId());
+                }
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            if (r.requestCommand.equals("your_turn")) {
-                System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
-                this.myTurn = true;
-
-            }
-            else {
-                System.out.println("client on " + Thread.currentThread().getId());
-            }
-
         }
     }
 
@@ -101,6 +110,7 @@ public class GameClient implements Model{
         try {
             Request respond = utils.getRequestFromInput(hs.getInputStream());
             System.out.println("client on" + Thread.currentThread().getId()+ " -server respond: " + respond.object);
+            boardString = (String) respond.object;
             return (String) respond.object;
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -120,6 +130,7 @@ public class GameClient implements Model{
                 throw new RuntimeException();
             }
             ScoreTable s = (ScoreTable) respond.object;
+            this.scoreTable = s;
             return s.scores;
 
 
@@ -132,6 +143,27 @@ public class GameClient implements Model{
     @Override
     public List<Tile> getClientTiles() {
         return this.tiles;
+    }
+
+    @Override
+    public void updateClient() {
+        waitToTurn();
+        Request r = new Request("update", "command", -1);
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            Request respond = utils.getRequestFromInput(hs.getInputStream());
+            if (!respond.requestCommand.equals("update_done")) {
+                System.out.println("error in server respond, expected update done got: " + respond.requestCommand);
+                throw new RuntimeException();
+            }
+            else {
+                System.out.println("client on " + Thread.currentThread().getId() + ": got update done");
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -169,7 +201,7 @@ public class GameClient implements Model{
 
     @Override
     public int placeWord(Word w) {
-        // todo: implement return -1 if word is invalid -2 if physically impossible
+        // if the score is positive, the word was placed successfully and the turn ended automatically
         waitToTurn();
         Request<Word> r = new Request<>("place_word", clientName, w);
         try {
@@ -184,6 +216,7 @@ public class GameClient implements Model{
                 System.out.println("client on " + Thread.currentThread().getId() + ": place word successfully");
                 //todo check whats happening here if tiles contains a tile from w twice
                 this.tiles.remove(w.getTiles());
+                this.endTurn();
             }
             return (int) serverRespond.object;
         } catch (IOException | ClassNotFoundException e) {

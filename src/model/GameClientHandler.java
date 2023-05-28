@@ -12,9 +12,7 @@ public class GameClientHandler implements ClientHandler{
     Scanner in;
     Socket clientSocket;
 
-
-    public GameClientHandler(Socket clientSocket){
-        this.clientSocket = clientSocket;
+    public GameClientHandler(Socket clientSocket) {
     }
 
 
@@ -23,9 +21,6 @@ public class GameClientHandler implements ClientHandler{
 
     }
 
-    @Override
-    public void handleClient(InputStream inFromClient, OutputStream outToClient, Socket gameServer) throws IOException {
-    }
 
     @Override
     public void handleClient(Socket clientSocket, Socket gameServer) throws IOException {
@@ -61,6 +56,12 @@ public class GameClientHandler implements ClientHandler{
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public void updateClient(String board) throws IOException {
+        GameClient.Request<Integer> r = new GameClient.Request<>("update","String",-1);
+        r.sendRequest(new ObjectOutputStream(clientSocket.getOutputStream()));
+
     }
 
 

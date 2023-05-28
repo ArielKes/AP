@@ -29,10 +29,6 @@ public class RunServer {
             }
         }
 
-        @Override
-        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
-
-        }
 
         @Override
         public void handleClient(Socket clientSocket, Socket serverSocket) throws IOException {
@@ -62,11 +58,6 @@ public class RunServer {
             String text = in.next();
             out.println(new StringBuilder(text).reverse());
             out.flush();
-        }
-
-        @Override
-        public void handleClient(InputStream inFromclient, OutputStream outToClient, Socket serverSocket) {
-
         }
 
         @Override
