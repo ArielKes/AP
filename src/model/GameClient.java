@@ -55,6 +55,7 @@ public class GameClient implements Model{
 
 
     void waitToTurn()  {
+        this.isGameStarted = true;
         if(!this.myTurn && !this.update) {
             Request r ;
             try {
@@ -69,7 +70,6 @@ public class GameClient implements Model{
                     this.update = true;
                     this.getBoard();
                     this.getScoreTable();
-                    this.isGameStarted = true;
                     Request res = new Request("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
                     this.update = false;
