@@ -9,8 +9,6 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.*;
 
-import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.util.Duration;
@@ -32,7 +30,13 @@ public class GameController extends BaseController implements Observer,Initializ
     @FXML
     Button testButton;
     @FXML
-    Label score;
+    Button checkButton;
+    @FXML
+    Button del;
+    @FXML
+    Text score;
+    @FXML
+    Text turn;
     private ArrayList<Button> buttons;
 
     @FXML
@@ -46,8 +50,10 @@ public class GameController extends BaseController implements Observer,Initializ
     StringProperty word = new SimpleStringProperty();
     ObservableList<Integer> tilesAmountlist = new SimpleListProperty<>();
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountlist);
-    private ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
+    private ListProperty<Integer> tilesAmount = new SimpleListProperty<>(observableList);
     private Text letter;
+    boolean deleteFlag = false;
+    ArrayList<Integer[]> pressedLocations = new ArrayList<>();
     ViewModel vm;
     private final char[][] bonus = {
             {'r','g','g','l','g','g','g','r','g','g','g','l','g','g','r'},
@@ -78,6 +84,8 @@ public class GameController extends BaseController implements Observer,Initializ
         }
         updateTilesDisplay();
         testButton.setOnMouseClicked(this::test);
+        checkButton.setOnMouseClicked(this::checkButtonPushed);
+        del.setOnMouseClicked(this::del);
         addTile.setOnMouseClicked(this::addTile);
         //initialize gridPane
         gridPane.setGridLinesVisible(true);
@@ -86,33 +94,29 @@ public class GameController extends BaseController implements Observer,Initializ
                 Text t = new Text(40, 30, "");
                 Rectangle r = new Rectangle(38, 30);
                 // coloring according to bonus
-                switch (bonus[row][col]){
-                    case 'r':
-                        r.setFill(Color.INDIANRED);
-                        break;
-                    case 'g':
-                        r.setFill(Color.LIGHTGREEN);
-                        break;
-                    case 'y':
-                        r.setFill(Color.YELLOW);
-                        break;
-                    case 'l':
-                        r.setFill(Color.LIGHTBLUE);
-                        break;
-                    case 'd':
-                        r.setFill(Color.DARKBLUE);
-                        break;
+                switch (bonus[row][col]) {
+                    case 'r' -> r.setFill(Color.INDIANRED);
+                    case 'g' -> r.setFill(Color.LIGHTGREEN);
+                    case 'y' -> r.setFill(Color.YELLOW);
+                    case 'l' -> r.setFill(Color.LIGHTBLUE);
+                    case 'd' -> r.setFill(Color.DARKBLUE);
                 }
                 StackPane pane = new StackPane(r, t);
-                pane.setOnMouseClicked(this::handleMouseClick);
+                pane.setOnMouseClicked(this::TileClicked);
                 gridPane.add(pane, col, row);
             }
         }
 
     }
 
+//    ************************************************** Buttons **************************************************
+
 //    TODO: fill according to model
-    private void addTile(MouseEvent mouseEvent) {}
+    private void addTile(MouseEvent mouseEvent) {
+        // increment tilesAmount
+        tilesAmount.replaceAll(integer -> integer + 1);
+        updateTilesDisplay();
+    }
 
     private void updateTilesDisplay() {
         for (int i = 0; i < tilesAmount.size(); i++) {
@@ -123,55 +127,84 @@ public class GameController extends BaseController implements Observer,Initializ
 
     private void test(Event event) {
         updateBoardDisplay();
-        Map<String, Integer> scroesMap = new HashMap<>();
-        scroesMap.put("A", 1);
-        scroesMap.put("B", 3);
-        scroesMap.put("C", 3);
-        setScores(scroesMap);
-        updateTilesArray(0, 0);
-    }
-
-    private void updateTilesArray(int index, int amount){
-        tilesAmount.set(index, amount);
-        updateTilesDisplay();
+        compareBoardToModel();
+        addTile(null);
     }
 
     private void setupButton(Button button) {
         button.setOnMouseClicked(mouseEvent -> {
             resetButtonsView();
-            if (checkTilesLeft(button.getText().charAt(0) - '0' - 17)){
+            if (checkTilesLeft(button.getText().charAt(0) - 'A')){
                 setPlayerChoice(button);
             }
             button.setDisable(true);
         });
     }
 
-    private void colsAppend(int col){
-        cols.set(cols.get() + col);
-    }
-
-    private void rowsAppend(int row){
-        rows.set(rows.get() + row);
-    }
-
-    private void handleMouseClick(Event event) {
-        if (letterChosen){
+    private void TileClicked(Event event) {
+        if (letterChosen || deleteFlag) {
             // write letter to text
             StackPane pane = (StackPane) event.getSource();
             Text text = (Text) pane.getChildren().get(1);
-            if (text.getText().equals("") || letter.getText().equals(""))  {
-                text.setText(letter.getText());
-                Node node = (Node) event.getSource();
-                Integer col = GridPane.getColumnIndex(node);
-                Integer row = GridPane.getRowIndex(node);
-                colsAppend(col);
-                rowsAppend(row);
-                word.set(word.get()+letter.getText());
-                // reset letter
-                letterChosen = false;
+            if (deleteFlag && verifyDelete(pane)) {
+                text.setText("");
+                deleteFlag = false;
 
             }
+            else if (text.getText().equals("") && checkTilesLeft(letter.getText().charAt(0) - 'A')){;
+                text.setText(letter.getText());
+                pressedLocations.add(new Integer[]{GridPane.getRowIndex(pane), GridPane.getColumnIndex(pane)});
+                // lower tilesAmount of clicked tile by 1
+                tilesAmount.set(letter.getText().charAt(0) - 'A', tilesAmount.get(letter.getText().charAt(0) - 'A') - 1);
+                updateTilesDisplay();
+                letterChosen = false;
+            }
         }
+    }
+
+    private void resetButtonsView(){
+        for(Button b:buttons){
+            b.setDisable(false);
+        }
+    }
+
+    private void checkButtonPushed(MouseEvent mouseEvent) {
+        check.set(true);
+        compareBoardToModel();
+        ArrayList<Integer> arr = getWordCoordinates();
+        wordVerifiedDisplay(vm.trySetWord(), arr.get(0), arr.get(1), arr.get(2), arr.get(3));
+        System.out.println(vm.word.get());
+        System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
+        resetChoice();
+        updateBoardDisplay();
+    }
+
+    private void del(MouseEvent mouseEvent) {
+        // delete letter from text of clicked tile
+        deleteFlag = true;
+
+    }
+
+    //    ************************************************** Data **************************************************
+
+    private boolean verifyDelete(StackPane pane){
+        // get row and col of pressed tile
+        int row = GridPane.getRowIndex(pane);
+        int col = GridPane.getColumnIndex(pane);
+        String text = ((Text) pane.getChildren().get(1)).getText();
+        // check if row, col in pressedLocations
+        for (Integer[] arr : pressedLocations) {
+            if (arr[0] == row && arr[1] == col) {
+                pressedLocations.remove(arr);
+                // increment tilesAmount of deleted tile by 1
+                tilesAmount.set(text.charAt(0) - 'A', tilesAmount.get(text.charAt(0) - 'A') + 1);
+                updateTilesDisplay();
+                return true;
+            }
+        }
+        return false;
+
+
     }
 
     private void setPlayerChoice(Button button){
@@ -185,28 +218,9 @@ public class GameController extends BaseController implements Observer,Initializ
         word.set("");
         cols.set("");
         rows.set("");
-    }
-
-    private void changeColor(int row, int col, Color color){
-        StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
-        Rectangle r = (Rectangle) pane.getChildren().get(0);
-        r.setFill(color);
-
-    }
-
-    private void glowRectangle(int row, int col, Color color){
-        /*
-        make the rectanle glow in a given color and change it back to the original color
-         */
-        StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
-        Rectangle r = (Rectangle) pane.getChildren().get(0);
-        Timeline timeline = new Timeline();
-        timeline.setCycleCount(2);
-        timeline.setAutoReverse(true);
-        KeyValue kv = new KeyValue(r.fillProperty(), color);
-        KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
+        letterChosen = false;
+        deleteFlag = false;
+        pressedLocations = new ArrayList<>();
     }
 
     private boolean checkTilesLeft(int index){
@@ -222,13 +236,70 @@ public class GameController extends BaseController implements Observer,Initializ
         return coordinates;
     }
 
-//    ************************************************** API **************************************************
-
-    public void resetButtonsView(){
-        for(Button b:buttons){
-            b.setDisable(false);
+    private String getBoardString(){
+        StringBuilder boardString = new StringBuilder();
+        for (int row = 0; row < 15; row++) {
+            for (int col = 0; col < 15; col++) {
+                StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
+                Text t = (Text) pane.getChildren().get(1);
+                if (t.getText().equals("")) {
+                    boardString.append("_");
+                } else {
+                    boardString.append(t.getText());
+                }
+            }
         }
+        return boardString.toString();
     }
+
+    private void compareBoardToModel(){
+        /* updates model with the current board from the GUI */
+
+        StringBuilder diffRows = new StringBuilder();
+        StringBuilder diffCols = new StringBuilder();
+        StringBuilder diffWord = new StringBuilder();
+        String modelBoard = vm.model.board.get_as_string();
+        String guiBoard = getBoardString();
+        for (int row = 0; row < 15; row++) {
+            for (int col = 0; col < 15; col++) {
+                int index = (row * 15) + col;
+                if (modelBoard.charAt(index) != guiBoard.charAt(index)){
+                    diffRows.append(row);
+                    diffCols.append(col);
+                    diffWord.append(guiBoard.charAt(index));
+                }
+            }
+        }
+        rows.set(diffRows.toString());
+        cols.set(diffCols.toString());
+        word.set(diffWord.toString());
+    }
+
+//    ************************************************** Display **************************************************
+
+    private void changeColor(int row, int col, Color color){
+        StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
+        Rectangle r = (Rectangle) pane.getChildren().get(0);
+        r.setFill(color);
+
+    }
+
+    private void glowRectangle(int row, int col, Color color){
+        /*
+        make the rectangle glow in a given color and change it back to the original color
+         */
+        StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
+        Rectangle r = (Rectangle) pane.getChildren().get(0);
+        Timeline timeline = new Timeline();
+        timeline.setCycleCount(2);
+        timeline.setAutoReverse(true);
+        KeyValue kv = new KeyValue(r.fillProperty(), color);
+        KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
+        timeline.getKeyFrames().add(kf);
+        timeline.play();
+    }
+
+//    ************************************************** API **************************************************
 
     public void wordVerifiedDisplay(boolean verified, int startRow, int startCol, int endRow, int endCol){
         for (int row = startRow; row <= endRow; row++) {
@@ -253,19 +324,9 @@ public class GameController extends BaseController implements Observer,Initializ
 
     }
 
-    public void checkButtonPushed(){
-        check.set(true);
-        ArrayList<Integer> arr = getWordCoordinates();
-        wordVerifiedDisplay(vm.trySetWord(), arr.get(0), arr.get(1), arr.get(2), arr.get(3));
-        System.out.println(vm.word.get());
-        System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
-        //System.out.println(vm.model.board.get_as_string());
-        resetChoice();
-        updateBoardDisplay();
-    }
-
     public void updateBoardDisplay(){
-       /* String board = vm.model.board.get_as_string();
+        /* updates GUI board display from the model's board*/
+        String board = vm.model.board.get_as_string();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
                 StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
@@ -277,9 +338,12 @@ public class GameController extends BaseController implements Observer,Initializ
                     text.setText(String.valueOf(c));
                 }
             }
-        }*/
+        }
     }
 
+    public void displayTurn(String name){
+        turn.setText("Turn: " + name);
+    }
 
 
     public void setViewModel(ViewModel vm){
@@ -288,7 +352,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
-        vm.tilesAmount.bind(this.tilesAmount);
+//        vm.tilesAmount.bind(this.tilesAmount);
     }
 
 
