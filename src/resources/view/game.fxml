@@ -99,7 +99,8 @@
                   <Button fx:id="X" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="X" />
                   <Button fx:id="Y" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Y" />
                   <Button fx:id="Z" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="Z" />
-                  <Button mnemonicParsing="false" onAction="#checkButtonPushed" prefHeight="22.0" prefWidth="50.0" text="check" />
+                  <Button fx:id="checkButton" mnemonicParsing="false" prefHeight="22.0" prefWidth="50.0" text="check" />
+                  <Button fx:id="del" mnemonicParsing="false" prefHeight="24.0" prefWidth="49.0" text="Del" />
                </children>
             </VBox>
          </children>
