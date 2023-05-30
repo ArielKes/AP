@@ -15,7 +15,7 @@ public class GameServerConnection {
     GameHost gameHost = null;
     GameClient gameClient = null;
 
-    ViewModel vm;
+    ViewModel vm=null;
     public void connectToServer(boolean isNewGame){
         if(isNewGame) {
             try {
@@ -37,9 +37,12 @@ public class GameServerConnection {
         return false;
     }
 
-    public void endLessLoop(){
-        while (true) {
+    public boolean isGameStart(){
+        if(this.gameClient!=null) {
+            this.vm = new ViewModel(gameClient);
+            return this.gameClient.isGameStarted();
         }
+        return false;
     }
 
     public void setGameHost() throws IOException, InterruptedException {
@@ -51,9 +54,10 @@ public class GameServerConnection {
     public void setGameClient(String name) throws IOException {
         new Thread(() -> {
             try {
-                this.gameClient = new GameClient(name);
-                this.vm = new ViewModel(this.gameClient);
-            } catch (IOException e) {e.printStackTrace();}
+                gameClient = new GameClient(name);
+                gameClient.getBoard();
+                while(!gameClient.isGameStarted()){}
+            } catch (Exception e) {e.printStackTrace();}
         }).start();
 
     }

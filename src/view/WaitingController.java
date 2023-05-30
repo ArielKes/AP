@@ -34,11 +34,14 @@ public class WaitingController extends BaseController implements Observer,Initia
         updatePlayerCount(playerCount);
         startButton.setOnAction(event -> {
             try {
-                if(this.gsc.StartGame()) {
+                if(this.gsc.StartGame()||this.gsc.isGameStart()) {
+                    this.setViewModel(this.gsc.getVM());
                     FXMLLoader fxmlLoader = changeScene("game.fxml", event);
                     GameController gc = fxmlLoader.getController();
-                    gc.setViewModel(vm);
-                    vm.addObserver(gc);
+                    if(vm!=null) {
+                        gc.setViewModel(vm);
+                        vm.addObserver(gc);
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

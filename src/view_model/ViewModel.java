@@ -30,7 +30,6 @@ public class ViewModel extends Observable implements Observer {
         this.col = new SimpleStringProperty();
         this.row = new SimpleStringProperty();
         this.vertical = true;
-        this.getTilesForPlayer();
     }
 
     private void getTilesForPlayer(){
@@ -75,6 +74,7 @@ public class ViewModel extends Observable implements Observer {
             int num = Character.getNumericValue(s.charAt(i));
             arr[i] = num;
         }
+        Arrays.sort(arr);
         return arr;
     }
 
@@ -130,7 +130,6 @@ public class ViewModel extends Observable implements Observer {
         int[] col_arr = parseIntString(col.get());
         int[] row_arr = parseIntString(row.get());
         if(checkValidity(col_arr ,row_arr)){
-            System.out.println("valid");
             int smallestRow = Arrays.stream(row_arr).min().getAsInt();
             int smallestCol = Arrays.stream(col_arr).min().getAsInt();
             Tile[] t = buildTilesArr(col_arr, row_arr, word.get().toCharArray());
