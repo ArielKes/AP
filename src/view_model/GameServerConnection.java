@@ -40,6 +40,8 @@ public class GameServerConnection {
     public boolean isGameStart(){
         if(this.gameClient!=null) {
             this.vm = new ViewModel(gameClient);
+            gameClient.addObserver(vm);
+            gameClient.notifyViemodel();
             return this.gameClient.isGameStarted();
         }
         return false;

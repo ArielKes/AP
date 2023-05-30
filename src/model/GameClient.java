@@ -67,7 +67,6 @@ public class GameClient extends Observable implements Model{
                     System.out.println("client on " + Thread.currentThread().getId() + ": got update command");
                     this.update = true;
                     this.getBoard();
-                    notifyObservers();
                     this.getScoreTable();
                     Request res = new Request("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
@@ -78,6 +77,7 @@ public class GameClient extends Observable implements Model{
                 else {
                     System.out.println("client on " + Thread.currentThread().getId());
                 }
+                this.notifyViemodel();
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -117,6 +117,11 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException(e);
         }
 
+    }
+
+    public void notifyViemodel() {
+        setChanged();
+        notifyObservers();
     }
 
     @Override
@@ -202,6 +207,7 @@ public class GameClient extends Observable implements Model{
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
+        this.notifyViemodel();
     }
 
 

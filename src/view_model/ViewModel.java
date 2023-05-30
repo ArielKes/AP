@@ -29,10 +29,11 @@ public class ViewModel extends Observable implements Observer {
         this.board = new SimpleStringProperty();
         this.col = new SimpleStringProperty();
         this.row = new SimpleStringProperty();
+        this.playersTiles = new ArrayList<Tile>();
         this.vertical = true;
     }
 
-    private void getTilesForPlayer(){
+    public void getTilesForPlayer(){
         for(int i=0 ; i<26 ; i++){
             this.tilesAmount.add(0);
         }
@@ -46,6 +47,7 @@ public class ViewModel extends Observable implements Observer {
     private Tile popPlayersTiles(char c){
         List<Tile>newList = new ArrayList<Tile>();
         Tile tile = null;
+        getTilesForPlayer();
         for(Tile t:this.playersTiles){
             newList.add(t);
         }
@@ -148,12 +150,20 @@ public class ViewModel extends Observable implements Observer {
         return valid;
     }
 
+    public void updateBoard() throws InterruptedException {
+        this.board.set(model.getBoard());
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(o==model){
-            try{
-                this.board.set(model.getBoard());
-            }catch (Exception e){}
+            try {
+                this.updateBoard();
+                this.getTilesForPlayer();
+                //TODO score
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

@@ -252,13 +252,18 @@ public class GameController extends BaseController implements Observer,Initializ
         return boardString.toString();
     }
 
-    private void compareBoardToModel(){
+    private void compareBoardToModel() {
         /* updates model with the current board from the GUI */
 
         StringBuilder diffRows = new StringBuilder();
         StringBuilder diffCols = new StringBuilder();
         StringBuilder diffWord = new StringBuilder();
-        String modelBoard = vm.model.board.get_as_string();
+        try {
+            vm.updateBoard();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        String modelBoard = vm.board.get();
         String guiBoard = getBoardString();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
@@ -326,7 +331,7 @@ public class GameController extends BaseController implements Observer,Initializ
 
     public void updateBoardDisplay(){
         /* updates GUI board display from the model's board*/
-        String board = vm.model.board.get_as_string();
+        String board = vm.board.get();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
                 StackPane pane = (StackPane) gridPane.getChildren().get((row * gridSize) + col + 1);
@@ -352,7 +357,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
-//        vm.tilesAmount.bind(this.tilesAmount);
+        this.tilesAmount.bind(vm.tilesAmount);
     }
 
 
