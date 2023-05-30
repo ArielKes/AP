@@ -102,7 +102,7 @@ public class GameController extends BaseController implements Observer,Initializ
                     case 'd' -> r.setFill(Color.DARKBLUE);
                 }
                 StackPane pane = new StackPane(r, t);
-                pane.setOnMouseClicked(this::handleMouseClick);
+                pane.setOnMouseClicked(this::TileClicked);
                 gridPane.add(pane, col, row);
             }
         }
@@ -112,7 +112,11 @@ public class GameController extends BaseController implements Observer,Initializ
 //    ************************************************** Buttons **************************************************
 
 //    TODO: fill according to model
-    private void addTile(MouseEvent mouseEvent) {}
+    private void addTile(MouseEvent mouseEvent) {
+        // increment tilesAmount
+        tilesAmount.replaceAll(integer -> integer + 1);
+        updateTilesDisplay();
+    }
 
     private void updateTilesDisplay() {
         for (int i = 0; i < tilesAmount.size(); i++) {
@@ -124,19 +128,20 @@ public class GameController extends BaseController implements Observer,Initializ
     private void test(Event event) {
         updateBoardDisplay();
         compareBoardToModel();
+        addTile(null);
     }
 
     private void setupButton(Button button) {
         button.setOnMouseClicked(mouseEvent -> {
             resetButtonsView();
-            if (checkTilesLeft(button.getText().charAt(0) - '0' - 17)){
+            if (checkTilesLeft(button.getText().charAt(0) - 'A')){
                 setPlayerChoice(button);
             }
             button.setDisable(true);
         });
     }
 
-    private void handleMouseClick(Event event) {
+    private void TileClicked(Event event) {
         if (letterChosen || deleteFlag) {
             // write letter to text
             StackPane pane = (StackPane) event.getSource();
@@ -144,11 +149,14 @@ public class GameController extends BaseController implements Observer,Initializ
             if (deleteFlag && verifyDelete(pane)) {
                 text.setText("");
                 deleteFlag = false;
+
             }
-            else if (text.getText().equals("") || letter.getText().equals(""))  {
+            else if (text.getText().equals("") && checkTilesLeft(letter.getText().charAt(0) - 'A')){;
                 text.setText(letter.getText());
                 pressedLocations.add(new Integer[]{GridPane.getRowIndex(pane), GridPane.getColumnIndex(pane)});
-                // reset letter
+                // lower tilesAmount of clicked tile by 1
+                tilesAmount.set(letter.getText().charAt(0) - 'A', tilesAmount.get(letter.getText().charAt(0) - 'A') - 1);
+                updateTilesDisplay();
                 letterChosen = false;
             }
         }
@@ -183,10 +191,14 @@ public class GameController extends BaseController implements Observer,Initializ
         // get row and col of pressed tile
         int row = GridPane.getRowIndex(pane);
         int col = GridPane.getColumnIndex(pane);
+        String text = ((Text) pane.getChildren().get(1)).getText();
         // check if row, col in pressedLocations
         for (Integer[] arr : pressedLocations) {
             if (arr[0] == row && arr[1] == col) {
                 pressedLocations.remove(arr);
+                // increment tilesAmount of deleted tile by 1
+                tilesAmount.set(text.charAt(0) - 'A', tilesAmount.get(text.charAt(0) - 'A') + 1);
+                updateTilesDisplay();
                 return true;
             }
         }
@@ -241,6 +253,8 @@ public class GameController extends BaseController implements Observer,Initializ
     }
 
     private void compareBoardToModel(){
+        /* updates model with the current board from the GUI */
+
         StringBuilder diffRows = new StringBuilder();
         StringBuilder diffCols = new StringBuilder();
         StringBuilder diffWord = new StringBuilder();
@@ -311,6 +325,7 @@ public class GameController extends BaseController implements Observer,Initializ
     }
 
     public void updateBoardDisplay(){
+        /* updates GUI board display from the model's board*/
         String board = vm.model.board.get_as_string();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
