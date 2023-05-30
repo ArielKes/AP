@@ -53,6 +53,7 @@ public class GameClient extends Observable implements Model{
 
 
     void waitToTurn()  {
+        this.isGameStarted = true;
         if(!this.myTurn && !this.update) {
             Request r ;
             try {
@@ -68,7 +69,6 @@ public class GameClient extends Observable implements Model{
                     this.getBoard();
                     notifyObservers();
                     this.getScoreTable();
-                    this.isGameStarted = true;
                     Request res = new Request("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
                     this.update = false;
