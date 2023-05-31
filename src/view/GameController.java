@@ -51,6 +51,8 @@ public class GameController extends BaseController implements Observer,Initializ
     ObservableList<Integer> tilesAmountlist = new SimpleListProperty<>();
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountlist);
     private ListProperty<Integer> tilesAmount = new SimpleListProperty<>(observableList);
+
+    MapProperty<String,Integer> ScoreTable = new SimpleMapProperty<String,Integer>();
     private Text letter;
     boolean deleteFlag = false;
     ArrayList<Integer[]> pressedLocations = new ArrayList<>();
@@ -106,7 +108,7 @@ public class GameController extends BaseController implements Observer,Initializ
                 gridPane.add(pane, col, row);
             }
         }
-
+        updateTilesDisplay();
     }
 
 //    ************************************************** Buttons **************************************************
@@ -115,6 +117,7 @@ public class GameController extends BaseController implements Observer,Initializ
     private void addTile(MouseEvent mouseEvent) {
         // increment tilesAmount
         tilesAmount.replaceAll(integer -> integer + 1);
+        this.vm.addTile();
         updateTilesDisplay();
     }
 
@@ -317,10 +320,10 @@ public class GameController extends BaseController implements Observer,Initializ
         }
     }
 
-    public void setScores(Map<String, Integer> dict){
+    public void setScores(){
         // set the scores in the view
         StringBuilder text = new StringBuilder("Scores: ");
-        for (Map.Entry<String, Integer> entry : dict.entrySet()) {
+        for (Map.Entry<String, Integer> entry : this.ScoreTable.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
             text.append(key).append(": ").append(value).append(", ");
@@ -331,6 +334,12 @@ public class GameController extends BaseController implements Observer,Initializ
 
     public void updateBoardDisplay(){
         /* updates GUI board display from the model's board*/
+        this.setScores();
+        try {
+            vm.updateBoard();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         String board = vm.board.get();
         for (int row = 0; row < 15; row++) {
             for (int col = 0; col < 15; col++) {
@@ -358,6 +367,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
         this.tilesAmount.bind(vm.tilesAmount);
+        this.ScoreTable.bind(vm.ScoreTable);
     }
 
 

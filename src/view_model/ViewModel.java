@@ -5,6 +5,7 @@ import game_src.Word;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import model.Model;
 
 import java.util.*;
@@ -21,6 +22,9 @@ public class ViewModel extends Observable implements Observer {
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountList);
     public ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
     List<Tile> playersTiles;
+    
+    ObservableMap<String,Integer> ScoreList = FXCollections.observableHashMap();
+    public MapProperty<String,Integer> ScoreTable = new SimpleMapProperty<String,Integer>(ScoreList);
 
     public ViewModel(Model model){
         this.model = model;
@@ -31,12 +35,16 @@ public class ViewModel extends Observable implements Observer {
         this.row = new SimpleStringProperty();
         this.playersTiles = new ArrayList<Tile>();
         this.vertical = true;
+        for(int i=0 ; i<26 ; i++){
+            this.tilesAmount.add(0);
+        }
     }
 
     public void getTilesForPlayer(){
         for(int i=0 ; i<26 ; i++){
-            this.tilesAmount.add(0);
+            this.tilesAmount.set(i, 0);
         }
+        this.playersTiles.clear();
         for(Tile t:this.model.getClientTiles()){
             this.playersTiles.add(t);
             int j = t.letter - 'A';
@@ -45,24 +53,14 @@ public class ViewModel extends Observable implements Observer {
     }
 
     private Tile popPlayersTiles(char c){
-        List<Tile>newList = new ArrayList<Tile>();
         Tile tile = null;
         getTilesForPlayer();
         for(Tile t:this.playersTiles){
-            newList.add(t);
-        }
-        for(int i=0 ; i<newList.size() ; i++){
-            if(newList.get(i).letter == c) {
-                this.tilesAmount.set((c - 'A'),this.tilesAmount.get(c - 'A')-1) ;
-                tile = newList.get(i);
-                newList.set(i, null);
+            if(t.letter == c){
+                tile = t;
+                this.playersTiles.remove(t);
                 break;
             }
-        }
-        this.playersTiles.clear();
-        for(Tile t:newList){
-            if(t!=null)
-                this.playersTiles.add(t);
         }
         return tile;
     }
@@ -154,13 +152,27 @@ public class ViewModel extends Observable implements Observer {
         this.board.set(model.getBoard());
     }
 
+    public void addTile(){
+        this.model.addTile();
+    }
+
+    public void setScore(){
+        HashMap<String,Integer> score = model.getScoreTable();
+        for(String s : score.keySet()){
+            this.ScoreTable.put(s,score.get(s));
+        }
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(o==model){
             try {
                 this.updateBoard();
                 this.getTilesForPlayer();
-                //TODO score
+                for(Tile t:this.playersTiles){
+                    System.out.print(t.letter);
+                }
+                this.setScore();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

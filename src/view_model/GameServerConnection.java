@@ -15,6 +15,9 @@ public class GameServerConnection {
     GameHost gameHost = null;
     GameClient gameClient = null;
 
+    String[] names = {"1","2","3","4","5"};
+    int nameIndex = 0;
+
     ViewModel vm=null;
     public void connectToServer(boolean isNewGame){
         if(isNewGame) {
@@ -24,7 +27,7 @@ public class GameServerConnection {
         }
         else {
             try {
-                setGameClient("1");
+                setGameClient(names[nameIndex++]);
             }catch (Exception e){}
         }
     }
