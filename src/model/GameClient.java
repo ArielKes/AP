@@ -231,6 +231,7 @@ public class GameClient extends Observable implements Model{
                 }
                 this.endTurn();
             }
+            this.notifyViewModel();
             return (int) serverRespond.object;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
