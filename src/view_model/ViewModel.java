@@ -22,7 +22,7 @@ public class ViewModel extends Observable implements Observer {
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountList);
     public ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
     List<Tile> playersTiles;
-    
+
     ObservableMap<String,Integer> ScoreList = FXCollections.observableHashMap();
     public MapProperty<String,Integer> ScoreTable = new SimpleMapProperty<String,Integer>(ScoreList);
 

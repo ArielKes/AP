@@ -1,13 +1,9 @@
 package view_model;
 
-import game_src.BookScrabbleHandler;
 import model.GameClient;
 import model.GameHost;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 import static java.lang.Thread.sleep;
 
@@ -44,7 +40,7 @@ public class GameServerConnection {
         if(this.gameClient!=null) {
             this.vm = new ViewModel(gameClient);
             gameClient.addObserver(vm);
-            gameClient.notifyViemodel();
+            gameClient.notifyViewModel();
             return this.gameClient.isGameStarted();
         }
         return false;

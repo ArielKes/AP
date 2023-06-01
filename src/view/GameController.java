@@ -104,11 +104,10 @@ public class GameController extends BaseController implements Observer,Initializ
                     case 'd' -> r.setFill(Color.DARKBLUE);
                 }
                 StackPane pane = new StackPane(r, t);
-                pane.setOnMouseClicked(this::TileClicked);
+                pane.setOnMouseClicked(this::placedLetterOnBoard);
                 gridPane.add(pane, col, row);
             }
         }
-        updateTilesDisplay();
     }
 
 //    ************************************************** Buttons **************************************************
@@ -144,7 +143,7 @@ public class GameController extends BaseController implements Observer,Initializ
         });
     }
 
-    private void TileClicked(Event event) {
+    private void placedLetterOnBoard(Event event) {
         if (letterChosen || deleteFlag) {
             // write letter to text
             StackPane pane = (StackPane) event.getSource();
@@ -368,6 +367,8 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.row.bind(this.rows);
         this.tilesAmount.bind(vm.tilesAmount);
         this.ScoreTable.bind(vm.ScoreTable);
+        updateTilesDisplay();
+        setScores();
     }
 
 

@@ -38,7 +38,7 @@ public class DictionaryManager {
             if(command =='C'){
                 return library.get(args[i]).challenge(question);}
             //if command is 'Q'
-            if(command =='Q' && library.get(args[i]).query(question))
+            if(command =='Q' && library.get(args[i]).challenge(question))
                 return true;
         }
         return false;

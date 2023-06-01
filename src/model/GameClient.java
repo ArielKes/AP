@@ -77,7 +77,7 @@ public class GameClient extends Observable implements Model{
                 else {
                     System.out.println("client on " + Thread.currentThread().getId());
                 }
-                this.notifyViemodel();
+                this.notifyViewModel();
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -119,7 +119,7 @@ public class GameClient extends Observable implements Model{
 
     }
 
-    public void notifyViemodel() {
+    public void notifyViewModel() {
         setChanged();
         notifyObservers();
     }
@@ -207,7 +207,7 @@ public class GameClient extends Observable implements Model{
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
-        this.notifyViemodel();
+        this.notifyViewModel();
     }
 
 
@@ -226,8 +226,9 @@ public class GameClient extends Observable implements Model{
             }
             if ((int) serverRespond.object > 0) {
                 System.out.println("client on " + Thread.currentThread().getId() + ": place word successfully");
-                //todo check whats happening here if tiles contains a tile from w twice
-                this.tiles.remove(w.getTiles());
+                for(Tile t : w.getTiles()) {
+                    this.tiles.remove(t);
+                }
                 this.endTurn();
             }
             return (int) serverRespond.object;
