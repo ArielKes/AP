@@ -30,7 +30,7 @@ public class dummyA {
             new Thread(() -> {
                 try {
                     GameClient c = new GameClient(Integer.toString(finalI));
-                    c.getBoard();
+                    c.checkWord("hello");
                     c.endTurn();
 
                     sleep(2000);

@@ -120,7 +120,7 @@ public class Board {
 	}
 	
 	public boolean dictionaryLegal(DictionaryManager dm, Word w) {
-		return dm.query("/Users/shlomo/IdeaProjects/AP/src/resources/words_alpha.txt",w.toString());
+		return dm.query("./src/resources/words_alpha.txt",w.toString());
 	}
 	
 	

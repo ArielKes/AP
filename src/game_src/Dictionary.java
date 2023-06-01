@@ -22,7 +22,9 @@ public class Dictionary {
 				while(s.hasNext())
 					bf.add(s.next());
 				s.close();
-			}catch(Exception e) {}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
 		}		
 		searcher=new ParIOSearcher();
 	}

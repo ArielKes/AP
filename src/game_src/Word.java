@@ -60,8 +60,8 @@ public class Word implements Serializable {
 		StringBuilder sb=new StringBuilder();
 		for(Tile t : tiles)
 			sb.append(t.letter);
-		sb.append(" ("+row+","+col+") "+(vertical?"vertical":"horizontal"));
-		return sb.toString();
+		//sb.append(" ("+row+","+col+") "+(vertical?"vertical":"horizontal"));
+		return sb.toString().toLowerCase();
 	}
 	
 }

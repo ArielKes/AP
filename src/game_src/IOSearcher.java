@@ -33,7 +33,10 @@ public class IOSearcher implements FileSearcher{
 						found=true;
 				s.close();
 			}
-		}catch(Exception e) {}
+		}catch(Exception e) {
+
+			e.printStackTrace();
+		}
 		
 		return found;
 	}
