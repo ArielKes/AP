@@ -1,10 +1,12 @@
 package view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextField;
 import view_model.GameServerConnection;
 import view_model.ViewModel;
 
@@ -22,6 +24,9 @@ public class WelcomeController extends BaseController implements Observer,Initia
     @FXML
     private ChoiceBox<String> gameTypeChoiceBox;
 
+    @FXML
+    private TextField playerNameField;
+
     private final String[] gameTypes = {"Join an existing game", "Create a new game"};
     private boolean newGame;
     GameServerConnection gsc;
@@ -34,15 +39,20 @@ public class WelcomeController extends BaseController implements Observer,Initia
             newGame = !gameTypeChoiceBox.getValue().equals(gameTypes[0]);
         });
         startButton.setOnAction(event -> {
-            try {
-                this.gsc.connectToServer(newGame);
-                FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
-                WaitingController wc = fxmlLoader.getController();
-                wc.setGameServerConnection(this.gsc);
-                wc.setViewModel(this.gsc.getVM());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            new Thread (()-> {
+                this.gsc.setName(playerNameField.getText());
+                Platform.runLater(() -> {
+                    this.gsc.connectToServer(newGame);
+                    try {
+                        FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
+                        WaitingController wc = fxmlLoader.getController();
+                        wc.setGameServerConnection(this.gsc);
+                        wc.setViewModel(this.gsc.getVM());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }).start();
         });
 
     }
