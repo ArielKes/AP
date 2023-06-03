@@ -208,9 +208,6 @@ public class Board {
 	}
 	
 	public int tryPlaceWord(Word w,DictionaryManager dm) {
-
-		if(!dictionaryLegal(dm,w))
-			return -1;
 		Tile[] ts = w.getTiles();
 		int row=w.getRow();
 		int col=w.getCol();
@@ -220,8 +217,11 @@ public class Board {
 			if(w.isVertical()) row++; else col++;
 		}
 		
-		Word test=new Word(ts, w.getRow(), w.getCol(), w.isVertical()); 
-		
+		Word test=new Word(ts, w.getRow(), w.getCol(), w.isVertical());
+
+		if(!dictionaryLegal(dm,test))
+			return -1;
+
 		int sum=0;				
 		if(boardLegal(test) ) {
 			ArrayList<Word> newWords=getWords(test);
