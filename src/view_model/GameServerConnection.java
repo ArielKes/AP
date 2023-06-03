@@ -11,7 +11,7 @@ public class GameServerConnection {
     GameHost gameHost = null;
     GameClient gameClient = null;
 
-    String[] names = {"1","2","3","4","5"};
+    String name = new String("Player");
     int nameIndex = 0;
 
     ViewModel vm=null;
@@ -23,7 +23,7 @@ public class GameServerConnection {
         }
         else {
             try {
-                setGameClient(names[nameIndex++]);
+                setGameClient(name);
             }catch (Exception e){}
         }
     }
@@ -34,6 +34,10 @@ public class GameServerConnection {
             return true;
         }
         return false;
+    }
+
+    public void setName(String name){
+        this.name = name;
     }
 
     public boolean isGameStart(){
@@ -56,7 +60,6 @@ public class GameServerConnection {
         new Thread(() -> {
             try {
                 gameClient = new GameClient(name);
-                gameClient.getBoard();
                 while(!gameClient.isGameStarted()){}
             } catch (Exception e) {e.printStackTrace();}
         }).start();
