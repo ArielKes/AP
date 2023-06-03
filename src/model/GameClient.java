@@ -207,7 +207,6 @@ public class GameClient extends Observable implements Model{
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
-        this.notifyViewModel();
     }
 
 
@@ -231,7 +230,6 @@ public class GameClient extends Observable implements Model{
                 }
                 this.endTurn();
             }
-            this.notifyViewModel();
             return (int) serverRespond.object;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

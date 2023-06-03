@@ -1,5 +1,6 @@
 package view;
 
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -129,8 +130,9 @@ public class GameController extends BaseController implements Observer,Initializ
 
     private void test(Event event) {
         updateBoardDisplay();
-        compareBoardToModel();
-        addTile(null);
+        updateTilesDisplay();
+        //compareBoardToModel();
+        //addTile(null);
     }
 
     private void setupButton(Button button) {
@@ -371,6 +373,11 @@ public class GameController extends BaseController implements Observer,Initializ
         setScores();
     }
 
+    public void update(Observable o, Object arg) {
+        if (o == vm) {
 
+
+        }
+    }
 
 }
