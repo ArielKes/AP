@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Observer;
 import java.util.ResourceBundle;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import view_model.GameServerConnection;
 import view_model.ViewModel;
 
@@ -33,19 +36,25 @@ public class WaitingController extends BaseController implements Observer,Initia
         waitingLabel.setText("");
         updatePlayerCount(playerCount);
         startButton.setOnAction(event -> {
-            try {
-                if(this.gsc.StartGame()||this.gsc.isGameStart()) {
-                    this.setViewModel(this.gsc.getVM());
-                    FXMLLoader fxmlLoader = changeScene("game.fxml", event);
-                    GameController gc = fxmlLoader.getController();
-                    if(vm!=null) {
-                        gc.setViewModel(vm);
-                        vm.addObserver(gc);
+            new Thread (()-> {
+                    this.gsc.StartGame();
+                    if (this.gsc.isGameStart()) {
+                        this.setViewModel(this.gsc.getVM());
+                        Platform.runLater(() -> {
+                            try {
+                                FXMLLoader fxmlLoader = changeScene("game.fxml", event);
+                                GameController gc = fxmlLoader.getController();
+                                if (vm != null) {
+                                    gc.setViewModel(vm);
+                                    vm.addObserver(gc);
+                                }
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        });
                     }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
+            }).start();
         });
 
     }
