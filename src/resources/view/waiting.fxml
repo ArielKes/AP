@@ -3,11 +3,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.WaitingController">
    <children>
       <Button fx:id="startButton" layoutX="412.0" layoutY="159.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="58.0" text="Start!" textAlignment="CENTER" />
       <Label fx:id="waitingLabel" layoutX="88.0" layoutY="178.0" text="Label" />
       <Label fx:id="playerCountLabel" layoutX="88.0" layoutY="115.0" text="Label" />
+      <Text fx:id="playerName" layoutX="280.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
    </children>
 </AnchorPane>

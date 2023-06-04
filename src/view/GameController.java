@@ -53,7 +53,8 @@ public class GameController extends BaseController implements Observer,Initializ
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountlist);
     private ListProperty<Integer> tilesAmount = new SimpleListProperty<>(observableList);
 
-    MapProperty<String,Integer> ScoreTable = new SimpleMapProperty<String,Integer>();
+    MapProperty<String,Integer> ScoreTable = new SimpleMapProperty<>();
+    BooleanProperty isMyTurn = new SimpleBooleanProperty();
     private Text letter;
     boolean deleteFlag = false;
     ArrayList<Integer[]> pressedLocations = new ArrayList<>();
@@ -90,6 +91,10 @@ public class GameController extends BaseController implements Observer,Initializ
         checkButton.setOnMouseClicked(this::checkButtonPushed);
         del.setOnMouseClicked(this::del);
         addTile.setOnMouseClicked(this::addTile);
+        isMyTurn.addListener((observable, oldValue, newValue) -> {
+            displayTurn(newValue);
+        });
+
         //initialize gridPane
         gridPane.setGridLinesVisible(true);
         for (int row = 0; row < 15; row++) {
@@ -125,6 +130,12 @@ public class GameController extends BaseController implements Observer,Initializ
         for (int i = 0; i < tilesAmount.size(); i++) {
             Button b = buttons.get(i);
             b.setTooltip(new Tooltip(String.valueOf(tilesAmount.get(i))));
+            if (tilesAmount.get(i) == 0) {
+                b.setVisible(false);
+            }
+            else {
+                b.setVisible(true);
+            }
         }
     }
 
@@ -356,9 +367,14 @@ public class GameController extends BaseController implements Observer,Initializ
         }
     }
 
-    public void displayTurn(String name){
-        turn.setText("Turn: " + name);
+    public void displayTurn(Boolean myTurn){
+        if (myTurn)
+            turn.setText("Your turn");
+        else
+            turn.setText("Opponent's turn");
     }
+
+
 
 
     public void setViewModel(ViewModel vm){
@@ -367,6 +383,7 @@ public class GameController extends BaseController implements Observer,Initializ
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
+        vm.isMyTurn.bind(this.isMyTurn);
         this.tilesAmount.bind(vm.tilesAmount);
         this.ScoreTable.bind(vm.ScoreTable);
         updateTilesDisplay();
