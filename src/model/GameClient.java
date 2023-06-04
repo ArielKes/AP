@@ -100,6 +100,7 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException(e);
         }
         this.myTurn = false;
+        this.notifyViewModel();
     }
 
     public String getBoard() {
@@ -207,6 +208,7 @@ public class GameClient extends Observable implements Model{
         for (int i = 0; i < n; i++) {
             tiles.add(getTile());
         }
+        this.notifyViewModel();
     }
 
 

@@ -121,7 +121,7 @@ public class GameController extends BaseController implements Observer,Initializ
 //    TODO: fill according to model
     private void addTile(MouseEvent mouseEvent) {
         // increment tilesAmount
-        tilesAmount.replaceAll(integer -> integer + 1);
+        //tilesAmount.replaceAll(integer -> integer + 1);
         this.vm.addTile();
         updateTilesDisplay();
     }
