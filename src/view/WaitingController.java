@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import view_model.GameServerConnection;
 import view_model.ViewModel;
 
@@ -26,6 +27,9 @@ public class WaitingController extends BaseController implements Observer,Initia
 
     @FXML
     private Label playerCountLabel;
+
+    @FXML
+    private Text playerName;
 
     private int playerCount = 1;
     GameServerConnection gsc;
@@ -63,6 +67,10 @@ public class WaitingController extends BaseController implements Observer,Initia
         playerCountLabel.setText("Current number of players: " + playerCount);
     }
 
+    public void setPlayerName(String name) {
+        playerName.setText(name);
+    }
+
 
 
     public void addPlayer(String name) {
@@ -73,5 +81,8 @@ public class WaitingController extends BaseController implements Observer,Initia
 
     public void setGameServerConnection(GameServerConnection gsc) {this.gsc = gsc;}
 
-    public void setViewModel(ViewModel vm){this.vm = vm;}
+    public void setViewModel(ViewModel vm){
+        this.vm = vm;
+
+    }
 }

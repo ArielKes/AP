@@ -22,6 +22,7 @@ public class ViewModel extends Observable implements Observer {
     ObservableList<Integer> tilesAmountList = new SimpleListProperty<>();
     ObservableList<Integer> observableList = FXCollections.observableArrayList(tilesAmountList);
     public ListProperty<Integer> tilesAmount = new SimpleListProperty<Integer>(observableList);
+    public BooleanProperty isMyTurn = new SimpleBooleanProperty();
     List<Tile> playersTiles;
 
     ObservableMap<String,Integer> ScoreList = FXCollections.observableHashMap();
@@ -36,7 +37,9 @@ public class ViewModel extends Observable implements Observer {
         this.col = new SimpleStringProperty();
         this.row = new SimpleStringProperty();
         this.playersTiles = new ArrayList<Tile>();
+        this.isMyTurn = new SimpleBooleanProperty();
         this.vertical = true;
+
         for(int i=0 ; i<26 ; i++){
             this.tilesAmount.add(0);
         }
