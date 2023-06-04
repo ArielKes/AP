@@ -42,9 +42,6 @@ public class GameServerConnection {
 
     public boolean isGameStart(){
         if(this.gameClient!=null) {
-            this.vm = new ViewModel(gameClient);
-            gameClient.addObserver(vm);
-            gameClient.notifyViewModel();
             return this.gameClient.isGameStarted();
         }
         return false;
@@ -60,6 +57,9 @@ public class GameServerConnection {
         new Thread(() -> {
             try {
                 gameClient = new GameClient(name);
+                this.vm = new ViewModel(gameClient);
+                gameClient.addObserver(vm);
+                gameClient.notifyViewModel();
                 while(!gameClient.isGameStarted()){}
             } catch (Exception e) {e.printStackTrace();}
         }).start();

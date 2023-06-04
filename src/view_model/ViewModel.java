@@ -13,6 +13,7 @@ import java.util.*;
 public class ViewModel extends Observable implements Observer {
     public Model model;
     public BooleanProperty check;
+    public BooleanProperty isMyTurn;
     public StringProperty word;
     public StringProperty board;
     public StringProperty col;
@@ -29,6 +30,7 @@ public class ViewModel extends Observable implements Observer {
     public ViewModel(Model model){
         this.model = model;
         this.check = new SimpleBooleanProperty();
+        this.isMyTurn = new SimpleBooleanProperty();
         this.word = new SimpleStringProperty();
         this.board = new SimpleStringProperty();
         this.col = new SimpleStringProperty();
@@ -168,6 +170,7 @@ public class ViewModel extends Observable implements Observer {
         if(o==model){
             try {
                 this.updateBoard();
+                this.isMyTurn.set(model.isMyTurn());
                 this.getTilesForPlayer();
                 for(Tile t:this.playersTiles){
                     System.out.print(t.letter);

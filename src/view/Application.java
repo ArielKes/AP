@@ -1,6 +1,7 @@
 package view;
 
 import game_src.BookScrabbleHandler;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -21,17 +22,24 @@ import static java.lang.Thread.sleep;
 public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException{
-        GameServerConnection gsc = new GameServerConnection();
+        new Thread (()-> {
+            GameServerConnection gsc = new GameServerConnection();
+            Platform.runLater(() -> {
+                FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("welcome.fxml"));
+                Scene scene = null;
+                try {
+                    scene = new Scene(fxmlLoader.load());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                WelcomeController wc = fxmlLoader.getController();
+                wc.setGameServerConnection(gsc);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("welcome.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-
-        WelcomeController wc = fxmlLoader.getController();
-        wc.setGameServerConnection(gsc);
-
-        stage.setTitle("Scrabble!");
-        stage.setScene(scene);
-        stage.show();
+                stage.setTitle("Scrabble!");
+                stage.setScene(scene);
+                stage.show();
+            });
+        }).start();
     }
 
     public static void main(String[] args) {
