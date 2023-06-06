@@ -48,9 +48,13 @@ public class GameServerConnection {
     }
 
     public void setGameHost() throws IOException, InterruptedException {
-        this.gameHost = new GameHost("src/resources/properties.txt");
-        this.gameHost.start();
-        sleep(1000);
+        new Thread(() -> {
+            try {
+                this.gameHost = new GameHost("src/resources/properties.txt");
+                this.gameHost.start();
+                sleep(1000);
+            } catch (Exception e) {e.printStackTrace();}
+        }).start();
     }
 
     public void setGameClient(String name) throws IOException {
