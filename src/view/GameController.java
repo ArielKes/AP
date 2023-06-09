@@ -184,6 +184,7 @@ public class GameController extends Observable implements Observer,Initializable
         System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
         resetChoice();
         updateBoardDisplay();
+        updateTilesDisplay();
     }
 
     private void del(MouseEvent mouseEvent) {

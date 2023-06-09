@@ -144,8 +144,9 @@ public class ViewModel extends Observable implements Observer {
                     System.out.print("_");
             }
             System.out.println("");
-            this.model.placeWord(w);
-            valid = true;
+            int validity = this.model.placeWord(w);
+            if(validity > 0)
+                valid = true;
         }
         vertical = true;
         return valid;
@@ -156,7 +157,6 @@ public class ViewModel extends Observable implements Observer {
     }
 
     public void updateTurn(){
-        System.out.println("update turn" + model.isMyTurn());
         this.isMyTurn.set(model.isMyTurn());
     }
 
