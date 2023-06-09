@@ -30,12 +30,23 @@ public class GameClient extends Observable implements Model{
 
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
+        new Thread( ()->{listenToTurn();}).start();
         getNTiles(7);
+        boardString = getBoard();
         int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
         this.endTurn();
 
     }
 
+    @Override
+    public HashMap<String, Integer> getScoreTableHashMap() {
+        return scoreTable.getScores();
+    }
+
+    @Override
+    public String getBoardString() {
+        return boardString;
+    }
 
     public GameClient(String clientName) throws IOException {
         properties = utils.getProperties("src/resources/properties.txt");
@@ -50,10 +61,25 @@ public class GameClient extends Observable implements Model{
         this.basicConstructor(clientName);
     }
 
+    void waitToTurn(){
+        while (!this.myTurn&&!this.update) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("client on " + Thread.currentThread().getId() + ": waitToTurn");
+            }
+        }
+    }
 
-
-    void waitToTurn()  {
+    void listenToTurn()  {
         this.isGameStarted = true;
+        while(this.myTurn || this.update) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("client on " + Thread.currentThread().getId() + ": listenToTurn");
+            }
+        }
         if(!this.myTurn && !this.update) {
             Request r ;
             try {
@@ -71,16 +97,18 @@ public class GameClient extends Observable implements Model{
                     Request res = new Request("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
                     this.update = false;
-                    waitToTurn();
+                    this.notifyViewModel();
+                    listenToTurn();
 
                 }
                 else {
                     System.out.println("client on " + Thread.currentThread().getId());
                 }
-                this.notifyViewModel();
+
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+            listenToTurn();
         }
     }
 
@@ -123,6 +151,7 @@ public class GameClient extends Observable implements Model{
     public void notifyViewModel() {
         setChanged();
         notifyObservers();
+        System.out.println("client on " + Thread.currentThread().getId() + ": notified view model");
     }
 
     @Override
@@ -182,7 +211,7 @@ public class GameClient extends Observable implements Model{
     public void addTile() {
         waitToTurn();
         getNTiles(1);
-
+        this.endTurn();
     }
 
 
