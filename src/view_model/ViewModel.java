@@ -152,7 +152,7 @@ public class ViewModel extends Observable implements Observer {
     }
 
     public void updateBoard() throws InterruptedException {
-        this.board.set(model.getBoard());
+        this.board.set(model.getBoardString());
     }
 
     public void addTile(){
@@ -160,7 +160,7 @@ public class ViewModel extends Observable implements Observer {
     }
 
     public void setScore(){
-        HashMap<String,Integer> score = model.getScoreTable();
+        HashMap<String,Integer> score = model.getScoreTableHashMap();
         for(String s : score.keySet()){
             this.ScoreTable.put(s,score.get(s));
         }

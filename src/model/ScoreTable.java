@@ -24,6 +24,10 @@ public class ScoreTable implements Serializable {
         }
     }
 
+    public HashMap<String, Integer> getScores() {
+        return scores;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

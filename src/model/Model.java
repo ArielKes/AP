@@ -24,5 +24,7 @@ public interface Model {
     int placeWord (Word w);
     boolean checkWord (String w);
 
+    String getBoardString();
+    HashMap<String, Integer> getScoreTableHashMap();
 
 }
