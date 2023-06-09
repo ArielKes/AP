@@ -22,9 +22,7 @@ import static java.lang.Thread.sleep;
 public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException{
-        //new Thread (()-> {
             GameServerConnection gsc = new GameServerConnection();
-           // Platform.runLater(() -> {
                 FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("welcome.fxml"));
                 Scene scene = null;
                 try {
@@ -38,8 +36,6 @@ public class Application extends javafx.application.Application {
                 stage.setTitle("Scrabble!");
                 stage.setScene(scene);
                 stage.show();
-          //  });
-        //}).start();
     }
 
     public static void main(String[] args) {

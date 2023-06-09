@@ -87,7 +87,7 @@ public class GameClient extends Observable implements Model{
                 if (r.requestCommand.equals("your_turn")) {
                     System.out.println("client on " + Thread.currentThread().getId() + ": got the turn");
                     this.myTurn = true;
-
+                    this.notifyViewModel();
                 }
                 else if (r.requestCommand.equals("update")) {
                     System.out.println("client on " + Thread.currentThread().getId() + ": got update command");
@@ -214,7 +214,6 @@ public class GameClient extends Observable implements Model{
         this.endTurn();
     }
 
-
     private Tile getTile() {
         waitToTurn();
         Request r = new Request( "get_tile","command", -1);
@@ -287,10 +286,6 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException(e);
         }
     }
-
-
-
-
 
     public static class Request<T extends Serializable> implements Serializable {
 

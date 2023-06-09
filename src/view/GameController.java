@@ -90,9 +90,6 @@ public class GameController extends Observable implements Observer,Initializable
         checkButton.setOnMouseClicked(this::checkButtonPushed);
         del.setOnMouseClicked(this::del);
         addTile.setOnMouseClicked(this::addTile);
-        isMyTurn.addListener((observable, oldValue, newValue) -> {
-            displayTurn(newValue);
-        });
 
         //initialize gridPane
         gridPane.setGridLinesVisible(true);
@@ -120,7 +117,6 @@ public class GameController extends Observable implements Observer,Initializable
 //    TODO: fill according to model
     private void addTile(MouseEvent mouseEvent) {
         // increment tilesAmount
-        //tilesAmount.replaceAll(integer -> integer + 1);
         this.vm.addTile();
         updateTilesDisplay();
     }
@@ -141,8 +137,6 @@ public class GameController extends Observable implements Observer,Initializable
     private void test(Event event) {
         updateBoardDisplay();
         updateTilesDisplay();
-        //compareBoardToModel();
-        //addTile(null);
     }
 
     private void setupButton(Button button) {
@@ -163,7 +157,6 @@ public class GameController extends Observable implements Observer,Initializable
             if (deleteFlag && verifyDelete(pane)) {
                 text.setText("");
                 deleteFlag = false;
-
             }
             else if (text.getText().equals("") && checkTilesLeft(letter.getText().charAt(0) - 'A')){;
                 text.setText(letter.getText());
@@ -217,8 +210,6 @@ public class GameController extends Observable implements Observer,Initializable
             }
         }
         return false;
-
-
     }
 
     private void setPlayerChoice(Button button){
@@ -340,12 +331,10 @@ public class GameController extends Observable implements Observer,Initializable
             text.append(key).append(": ").append(value).append(", ");
         }
         score.setText(text.toString());
-
     }
 
     public void updateBoardDisplay(){
         /* updates GUI board display from the model's board*/
-        this.setScores();
         try {
             vm.updateBoard();
         } catch (InterruptedException e) {
@@ -366,8 +355,8 @@ public class GameController extends Observable implements Observer,Initializable
         }
     }
 
-    public void displayTurn(Boolean myTurn){
-        if (myTurn)
+    public void displayTurn(){
+        if (this.isMyTurn.get())
             turn.setText("Your turn");
         else
             turn.setText("Opponent's turn");
@@ -379,10 +368,11 @@ public class GameController extends Observable implements Observer,Initializable
         vm.word.bind(this.word);
         vm.col.bind(this.cols);
         vm.row.bind(this.rows);
-        vm.isMyTurn.bind(this.isMyTurn);
+        this.isMyTurn.bind(vm.isMyTurn);
         this.tilesAmount.bind(vm.tilesAmount);
         this.ScoreTable.bind(vm.ScoreTable);
         updateTilesDisplay();
+        displayTurn();
         setScores();
     }
 
@@ -390,6 +380,8 @@ public class GameController extends Observable implements Observer,Initializable
     public void update(java.util.Observable o, Object arg) {
         if (o == vm) {
             updateBoardDisplay();
+            updateTilesDisplay();
+            displayTurn();
             setScores();
         }
     }

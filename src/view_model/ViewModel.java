@@ -155,6 +155,11 @@ public class ViewModel extends Observable implements Observer {
         this.board.set(model.getBoardString());
     }
 
+    public void updateTurn(){
+        System.out.println("update turn" + model.isMyTurn());
+        this.isMyTurn.set(model.isMyTurn());
+    }
+
     public void addTile(){
         this.model.addTile();
     }
@@ -171,7 +176,7 @@ public class ViewModel extends Observable implements Observer {
         if(o==model){
             try {
                 this.updateBoard();
-                //this.isMyTurn.set(model.isMyTurn());
+                this.updateTurn();
                 this.getTilesForPlayer();
                 for(Tile t:this.playersTiles){
                     System.out.print(t.letter);
