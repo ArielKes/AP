@@ -39,9 +39,7 @@ public class WelcomeController extends BaseController implements Observer,Initia
             newGame = !gameTypeChoiceBox.getValue().equals(gameTypes[0]);
         });
         startButton.setOnAction(event -> {
-            //new Thread (()-> {
                 this.gsc.setName(playerNameField.getText());
-               // Platform.runLater(() -> {
                     this.gsc.connectToServer(newGame);
                     try {
                         FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
@@ -52,8 +50,6 @@ public class WelcomeController extends BaseController implements Observer,Initia
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-            //    });
-          //  }).start();
         });
 
     }

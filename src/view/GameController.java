@@ -1,6 +1,5 @@
 package view;
 
-import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import view_model.ViewModel;
 
-public class GameController extends BaseController implements Observer,Initializable {
+public class GameController extends Observable implements Observer,Initializable {
     @FXML
     private Button A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,addTile;
     @FXML
@@ -374,9 +373,6 @@ public class GameController extends BaseController implements Observer,Initializ
             turn.setText("Opponent's turn");
     }
 
-
-
-
     public void setViewModel(ViewModel vm){
         this.vm = vm;
         vm.check.bind(this.check);
@@ -390,11 +386,11 @@ public class GameController extends BaseController implements Observer,Initializ
         setScores();
     }
 
-    public void update(Observable o, Object arg) {
+    @Override
+    public void update(java.util.Observable o, Object arg) {
         if (o == vm) {
-
-
+            updateBoardDisplay();
+            setScores();
         }
     }
-
 }

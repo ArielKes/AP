@@ -180,6 +180,8 @@ public class ViewModel extends Observable implements Observer {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            setChanged();
+            notifyObservers();
         }
     }
 }

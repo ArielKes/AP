@@ -63,7 +63,6 @@ public class GameServerConnection {
                 gameClient = new GameClient(name);
                 this.vm = new ViewModel(gameClient);
                 gameClient.addObserver(vm);
-                gameClient.notifyViewModel();
                 while(!gameClient.isGameStarted()){}
             } catch (Exception e) {e.printStackTrace();}
         }).start();
