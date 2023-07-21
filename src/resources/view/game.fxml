@@ -80,7 +80,7 @@
                   <Button fx:id="K" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="K" />
                   <Button fx:id="L" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="L" />
                   <Button fx:id="M" mnemonicParsing="false" prefHeight="26.0" prefWidth="50.0" text="M" />
-                  <Button fx:id="testButton" mnemonicParsing="false" prefHeight="24.0" prefWidth="50.0" text="Button" />
+                  <Button fx:id="testButton" mnemonicParsing="false" prefHeight="24.0" prefWidth="50.0" text="Hint" />
                   <Button fx:id="addTile" mnemonicParsing="false" prefHeight="24.0" prefWidth="54.0" text="Tile" />
                </children>
             </VBox>
