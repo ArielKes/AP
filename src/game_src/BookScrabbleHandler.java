@@ -1,9 +1,16 @@
 package game_src;
 
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import model.GameClient;
 import model.ScoreTable;
 import model.utils;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +25,7 @@ public class BookScrabbleHandler implements ClientHandler {
     InputStream in;
     Tile.Bag bag;
     ScoreTable scoreTable;
+
     public BookScrabbleHandler() {
         dm = DictionaryManager.get();
         board = new Board();
@@ -25,7 +33,53 @@ public class BookScrabbleHandler implements ClientHandler {
         scoreTable = new ScoreTable();
     }
 
+    //public String getBoardStringFromDB(String gameID){
+    //}
+    //public HashMap<String,Integer> getScoreTableFromDB(String gameID){
+    //}
+    //public HashMap<String, List<Tile>> getPlayersTilesFromDB(String gameID){
+    //}
 
+
+
+    public void saveBoardToDB(String gameID) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scrabble");
+        MongoCollection<Document> collection = database.getCollection("GameBoard");
+        Document document = new Document("Game Index" , gameID);
+        document.append("Board", this.board.get_as_string());
+        collection.insertOne(document);
+        mongoClient.close();
+    }
+
+    public void saveGameStateToDB(String gameID) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scrabble");
+        MongoCollection<Document> collection = database.getCollection("GameState");
+        Document document = new Document("Game Index" , gameID);
+        document.append("Score Table", this.scoreTable.toString());
+        collection.insertOne(document);
+        mongoClient.close();
+    }
+/*
+    //TODO: save board(string), save score table(HashMap<String,Integer>), save users Tiles(List<Tile>),
+
+    public String getFromDB(String gameID) {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scrabble");
+        Bson query = Filters.eq("Game Index", this.gameIndex);
+        MongoCollection<Document> collection = database.getCollection("GameState");
+        // Execute the query and retrieve the result
+        Document result = collection.find(query).first();
+        String ResumeCurrentPlayer = null;
+        if (result != null) {
+            // Access the retrieved fields from the document
+            ResumeCurrentPlayer = result.getString("Test");
+        }
+        mongoClient.close();
+        return ResumeCurrentPlayer;
+    }
+*/
     private void parseRequest(GameClient.Request request) {
         try {
             String command = request.requestCommand;
@@ -34,6 +88,7 @@ public class BookScrabbleHandler implements ClientHandler {
             else if (command.equals("get_tile")) send_tile();
             else if (command.equals("check_word")) check_word((String) request.object, request.requestArgs);
             else if (command.equals("get_score_table")) send_score_table();
+
 
 
 
