@@ -45,7 +45,7 @@ public class BookScrabbleHandler implements ClientHandler {
         bag = new Tile.Bag();
     }
     void loadGame(String GameID){
-        if (GameID == "0") return;
+        if (GameID.equals("0")) return;
         loadBoard(GameID);
         loadScoreBoard(GameID);
         loadPlayersTiles(GameID);
@@ -82,7 +82,21 @@ public class BookScrabbleHandler implements ClientHandler {
         return gameStateResult;
     }
 
-
+    public HashMap<String, List<Tile>> getPlayersTilesFromDB(String gameID){
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("Scrabble");
+        MongoCollection<Document> collection = database.getCollection("GameState");
+        Bson query = Filters.eq("Game Index", gameID);
+        Document result = collection.find(query).sort(Sorts.descending("_id")).first();
+        HashMap<String, List<Tile>> playersTilesResult = new HashMap<String, List<Tile>>();
+        if (result != null) {
+            // Access the retrieved fields from the document
+            String resultString = result.getString("Players Tile");
+            playersTilesResult = convertStringToPlayersTiles(resultString);
+        }
+        mongoClient.close();
+        return playersTilesResult;
+    }
 
     public void saveBoardToDB(String gameID) {
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
@@ -100,15 +114,44 @@ public class BookScrabbleHandler implements ClientHandler {
         MongoCollection<Document> collection = database.getCollection("GameState");
         Document document = new Document("Game Index" , gameID);
         document.append("Score Table", this.scoreTable.toString());
+        document.append("Players Tile", convertPlayersTilesToString());
         collection.insertOne(document);
         mongoClient.close();
+    }
+
+    private String convertPlayersTilesToString(){
+        String result = "";
+        for (String key : playersTiles.keySet()) {
+            result += key+ ":";
+            for (Tile tile : playersTiles.get(key)) {
+                result += tile.letter + ",";
+            }
+            result += ";";
+        }
+        return result;
+    }
+
+    private HashMap<String, List<Tile>> convertStringToPlayersTiles(String playersTilesString){
+        HashMap<String, List<Tile>> p = new HashMap<String, List<Tile>>();
+        String[] playersTilesArray = playersTilesString.split(";");
+        for (String playerTiles : playersTilesArray) {
+            String[] playerTilesArray = playerTiles.split(":");
+            String playerName = playerTilesArray[0];
+            String[] tilesArray = playerTilesArray[1].split(",");
+            List<Tile> tiles = new ArrayList<>();
+            for (String tile : tilesArray) {
+                if(tile.equals("")) continue;
+                tiles.add(bag.getTile(tile.charAt(0)));
+            }
+            p.put(playerName, tiles);
+        }
+        return p;
     }
 
     public void saveToDB(String gameID) {
         if (gameID.equals("0")) return;
         saveGameStateToDB(gameID);
         saveBoardToDB(gameID);
-        //saveScoreBoardToDB(gameID);
     }
 
 
@@ -214,9 +257,9 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     private void loadPlayersTiles(String gameID) {
-//        HashMap<String, List<Tile>> p = getPlayersTilesFromDB(gameID);
-//        if (p == null) return;
-//        playersTiles = getPlayersTilesFromDB(gameID);
+        HashMap<String, List<Tile>> p = getPlayersTilesFromDB(gameID);
+        if (p == null) return;
+        playersTiles = p;// getPlayersTilesFromDB(gameID);
     }
 
     @Override
