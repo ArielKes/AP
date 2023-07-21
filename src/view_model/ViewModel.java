@@ -171,6 +171,11 @@ public class ViewModel extends Observable implements Observer {
         }
     }
 
+    public void notifyView(){
+        setChanged();
+        notifyObservers();
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         if(o==model){
@@ -178,15 +183,11 @@ public class ViewModel extends Observable implements Observer {
                 this.updateBoard();
                 this.updateTurn();
                 this.getTilesForPlayer();
-                for(Tile t:this.playersTiles){
-                    System.out.print(t.letter);
-                }
                 this.setScore();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            setChanged();
-            notifyObservers();
+            this.notifyView();
         }
     }
 }

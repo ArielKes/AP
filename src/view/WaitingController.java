@@ -51,6 +51,7 @@ public class WaitingController extends BaseController implements Observer,Initia
                                 if (vm != null) {
                                     gc.setViewModel(vm);
                                     vm.addObserver(gc);
+                                    vm.notifyView();
                                 }
                         } catch (IOException e) {
                             throw new RuntimeException(e);

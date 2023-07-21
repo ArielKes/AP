@@ -56,7 +56,6 @@ public class WelcomeController extends BaseController implements Observer,Initia
             newGame = !gameTypeChoiceBox.getValue().equals(gameTypes[0]);
         });
         startButton.setOnAction(event -> {
-            this.properties.replace("game_host.port", gamePortField.getText());
             this.gsc.setName(playerNameField.getText());
             this.gsc.setGameID(gameIDField.getText());
                 this.gsc.connectToServer(newGame);
@@ -70,11 +69,8 @@ public class WelcomeController extends BaseController implements Observer,Initia
                     throw new RuntimeException(e);
                 }
         });
-
     }
-
     public void setGameServerConnection(GameServerConnection gsc) {
        this.gsc = gsc;
     }
-
 }
