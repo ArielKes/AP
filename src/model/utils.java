@@ -43,4 +43,27 @@ public class utils {
         return request;
     }
 
+    public static HashMap<String, Integer> convertStringToHashMap(String input) {
+        HashMap<String, Integer> resultMap = new HashMap<>();
+
+        // Split the string by newline character to get individual key-value pairs
+        String[] keyValuePairs = input.split("\n");
+
+        for (String keyValue : keyValuePairs) {
+            // Split each key-value pair by colon
+            String[] pair = keyValue.split(": ");
+
+            if (pair.length == 2) {
+                String key = pair[0].trim();
+                int value = Integer.parseInt(pair[1].trim());
+
+                // Add the key-value pair to the HashMap
+                resultMap.put(key, value);
+            }
+        }
+
+        return resultMap;
+    }
 }
+
+
