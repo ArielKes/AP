@@ -118,10 +118,8 @@ public class BookScrabbleHandler implements ClientHandler {
     private void parseRequest(GameClient.Request request) {
         try {
             String command = request.requestCommand;
-            if (command.equals("get_board")){
-                getScoreTableFromDB("0");
-                send_board();
-            }
+            if (command.equals("get_board")) send_board();
+
             else if (command.equals("place_word")) place((Word) request.object, request.requestArgs);
             else if (command.equals("get_tile")) send_tile();
             else if (command.equals("check_word")) check_word((String) request.object, request.requestArgs);
