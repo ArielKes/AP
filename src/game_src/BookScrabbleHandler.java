@@ -105,6 +105,7 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     public void saveToDB(String gameID) {
+        if (gameID.equals("0")) return;
         saveGameStateToDB(gameID);
         saveBoardToDB(gameID);
         //saveScoreBoardToDB(gameID);
@@ -194,7 +195,7 @@ public class BookScrabbleHandler implements ClientHandler {
 
     public void loadBoard(String gameID) {
         String board_str = getBoardStringFromDB(gameID);
-        HashMap<Tile, Integer> tiles_loc = new HashMap<>();
+        if (board_str == null) return;
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 char c = board_str.charAt(i * 15 + j);
@@ -207,11 +208,15 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     public void loadScoreBoard(String gameID) {
-        scoreTable.scores = getScoreTableFromDB(gameID);
+        HashMap<String, Integer> s = getScoreTableFromDB(gameID);
+        if (s == null) return;
+        scoreTable.scores = s;
     }
 
     private void loadPlayersTiles(String gameID) {
-        //playersTiles = getPlayersTilesFromDB(gameID);
+//        HashMap<String, List<Tile>> p = getPlayersTilesFromDB(gameID);
+//        if (p == null) return;
+//        playersTiles = getPlayersTilesFromDB(gameID);
     }
 
     @Override
