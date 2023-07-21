@@ -121,6 +121,8 @@ public class BookScrabbleHandler implements ClientHandler {
             else if (command.equals("check_word")) check_word((String) request.object, request.requestArgs);
             else if (command.equals("get_score_table")) send_score_table();
             else if (command.equals("init_tiles")) send_initial_tiles((String) request.object);
+            else if (command.equals("save_state")) saveToDB(request.requestArgs);
+
 
 
         } catch (IOException e) {

@@ -93,6 +93,12 @@ public class GameHost{
                     e.printStackTrace();
                 }
             }
+            GameClient.Request<Integer> request = new GameClient.Request<>("load_game_ID", gameID, -1);
+            try {
+                request.sendRequest(new ObjectOutputStream(bookServerSocket.getOutputStream()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
