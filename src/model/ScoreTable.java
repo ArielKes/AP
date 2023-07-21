@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class ScoreTable implements Serializable {
-    HashMap<String, Integer> scores;
+    public HashMap<String, Integer> scores;
 
     public ScoreTable(){
         scores = new HashMap<>();
+    }
+    public ScoreTable(HashMap<String, Integer> prev_scores){
+        scores = prev_scores;
     }
     @Override
     public int hashCode() {
@@ -15,7 +18,7 @@ public class ScoreTable implements Serializable {
     }
 
     public void addScore(String clientName, int score) {
-        if (-3 < score && score < 0) score = 0; // in case of -1 / -2 from illegal word
+        if (score == -1 || score == -2) score = 0; // in case of -1 / -2 from illegal word
         if (scores.containsKey(clientName)){
             scores.put(clientName, scores.get(clientName) + score);
         }

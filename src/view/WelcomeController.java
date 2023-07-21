@@ -51,12 +51,12 @@ public class WelcomeController extends BaseController implements Observer,Initia
         gameTypeChoiceBox.getItems().addAll(gameTypes);
         gameTypeChoiceBox.setValue(gameTypes[0]);
         gameIDField.setText("0");
-        gamePortField.setText(this.properties.get("game_server.port"));
+        gamePortField.setText(this.properties.get("game_host.port"));
         gameTypeChoiceBox.setOnAction(event -> {
             newGame = !gameTypeChoiceBox.getValue().equals(gameTypes[0]);
         });
         startButton.setOnAction(event -> {
-            this.properties.replace("game_server.port", gamePortField.getText());
+            this.properties.replace("game_host.port", gamePortField.getText());
             this.gsc.setName(playerNameField.getText());
             this.gsc.setGameID(gameIDField.getText());
                 this.gsc.connectToServer(newGame);

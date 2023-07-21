@@ -31,7 +31,7 @@ public class GameClient extends Observable implements Model{
     private void basicConstructor(String clientName) throws IOException {
         this.clientName = clientName;
         new Thread( ()->{listenToTurn();}).start();
-        getNTiles(7);
+        initTiles();
         boardString = getBoard();
         int a = placeWord(new Word(new Tile[]{this.tiles.get(0)}, 7, 7, true));
         this.endTurn();
@@ -61,8 +61,17 @@ public class GameClient extends Observable implements Model{
         this.basicConstructor(clientName);
     }
 
-    void waitToTurn(){
+    void waitToTurnOrUpdate(){
         while (!this.myTurn&&!this.update) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("client on " + Thread.currentThread().getId() + ": waitToTurn");
+            }
+        }
+    }
+    void waitToTurn(){
+        while (!this.myTurn) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -94,7 +103,7 @@ public class GameClient extends Observable implements Model{
                     this.update = true;
                     this.getBoard();
                     this.getScoreTable();
-                    Request res = new Request("update_done", "command", -1);
+                    Request<Integer> res = new Request<>("update_done", "command", -1);
                     res.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
                     this.update = false;
                     this.notifyViewModel();
@@ -132,7 +141,7 @@ public class GameClient extends Observable implements Model{
     }
 
     public String getBoard() {
-        waitToTurn();
+        waitToTurnOrUpdate();
         Request<Integer> r = new Request<Integer>("get_board", "command", -1);
         //wait for server to send score
         try {
@@ -156,7 +165,7 @@ public class GameClient extends Observable implements Model{
 
     @Override
     public HashMap<String, Integer> getScoreTable() {
-        waitToTurn();
+        waitToTurnOrUpdate();
         Request<Integer> r = new Request<Integer>("get_score_table", "command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
@@ -184,7 +193,7 @@ public class GameClient extends Observable implements Model{
     @Override
     public void updateClient() {
         waitToTurn();
-        Request r = new Request("update", "command", -1);
+        Request<Integer> r = new Request<>("update", "command", -1);
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
             Request respond = utils.getRequestFromInput(hs.getInputStream());
@@ -216,7 +225,7 @@ public class GameClient extends Observable implements Model{
 
     private Tile getTile() {
         waitToTurn();
-        Request r = new Request( "get_tile","command", -1);
+        Request<String> r = new Request<>( "get_tile","String",clientName );
         Request respond;
         try {
             r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
@@ -229,6 +238,24 @@ public class GameClient extends Observable implements Model{
             throw new RuntimeException();
         }
         else return (Tile) respond.object;
+
+    }
+    private void initTiles() {
+        waitToTurn();
+        Request<String> r = new Request<>( "init_tiles","clientName", clientName);
+        Request respond;
+        try {
+            r.sendRequest(new ObjectOutputStream(hs.getOutputStream()));
+            respond = utils.getRequestFromInput(hs.getInputStream());
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        if (!respond.requestCommand.equals("sent_initial_tiles")) {
+            System.out.println("error in server respond, expected init_tiles got: " + respond.requestCommand);
+            throw new RuntimeException();
+        }
+        // loop through the tiles sent from the server and add them to the client's tiles
+        tiles.addAll((List<Tile>) respond.object);
 
     }
     private void getNTiles(int n) {
@@ -287,7 +314,7 @@ public class GameClient extends Observable implements Model{
         }
     }
 
-    public static class Request<T extends Serializable> implements Serializable {
+    public static class Request<T> implements Serializable {
 
         public String requestCommand;
         public T object;

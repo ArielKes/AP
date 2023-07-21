@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,12 +29,26 @@ public class BookScrabbleHandler implements ClientHandler {
     InputStream in;
     Tile.Bag bag;
     ScoreTable scoreTable;
+    HashMap<String, List<Tile>> playersTiles;
 
     public BookScrabbleHandler() {
         dm = DictionaryManager.get();
         board = new Board();
         bag = new Tile.Bag();
         scoreTable = new ScoreTable();
+        playersTiles = new HashMap<>();
+    }
+
+    public BookScrabbleHandler(String GameID) {
+        dm = DictionaryManager.get();
+        board = new Board();
+        bag = new Tile.Bag();
+    }
+    void loadGame(String GameID){
+        if (GameID == "0") return;
+        loadBoard(GameID);
+        loadScoreBoard(GameID);
+        loadPlayersTiles(GameID);
     }
 
     public String getBoardStringFromDB(String gameID){
@@ -66,8 +81,6 @@ public class BookScrabbleHandler implements ClientHandler {
         mongoClient.close();
         return gameStateResult;
     }
-    //public HashMap<String, List<Tile>> getPlayersTilesFromDB(String gameID){
-    //}
 
 
 
@@ -94,36 +107,21 @@ public class BookScrabbleHandler implements ClientHandler {
     public void saveToDB(String gameID) {
         saveGameStateToDB(gameID);
         saveBoardToDB(gameID);
+        //saveScoreBoardToDB(gameID);
     }
 
-/*
-    //TODO: save board(string), save score table(HashMap<String,Integer>), save users Tiles(List<Tile>),
 
-    public String getFromDB(String gameID) {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase database = mongoClient.getDatabase("Scrabble");
-        Bson query = Filters.eq("Game Index", this.gameIndex);
-        MongoCollection<Document> collection = database.getCollection("GameState");
-        // Execute the query and retrieve the result
-        Document result = collection.find(query).first();
-        String ResumeCurrentPlayer = null;
-        if (result != null) {
-            // Access the retrieved fields from the document
-            ResumeCurrentPlayer = result.getString("Test");
-        }
-        mongoClient.close();
-        return ResumeCurrentPlayer;
-    }
-*/
     private void parseRequest(GameClient.Request request) {
         try {
             String command = request.requestCommand;
-            if (command.equals("get_board")) send_board();
-
+            if (command.equals("load_game_ID")) loadGame(request.requestArgs);
+            else if (command.equals("get_board")) send_board();
             else if (command.equals("place_word")) place((Word) request.object, request.requestArgs);
-            else if (command.equals("get_tile")) send_tile();
+            else if (command.equals("get_tile")) send_tile((String) request.object);
             else if (command.equals("check_word")) check_word((String) request.object, request.requestArgs);
             else if (command.equals("get_score_table")) send_score_table();
+            else if (command.equals("init_tiles")) send_initial_tiles((String) request.object);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -132,40 +130,86 @@ public class BookScrabbleHandler implements ClientHandler {
     }
 
     private void send_score_table() throws IOException {
-        GameClient.Request<ScoreTable> r = new GameClient.Request<>( "score_table","score_table", scoreTable);
+        GameClient.Request<ScoreTable> r = new GameClient.Request<>(
+                "score_table", "score_table", scoreTable);
         r.sendRequest(new ObjectOutputStream(out));
     }
 
-    private void check_word(String word,String clientName) throws IOException {
-        boolean res =  dm.challenge("/Users/shlomo/IdeaProjects/AP/src/resources/words_alpha.txt",word);
-        if (!res){
-            scoreTable.addScore(clientName,-5);
+    private void check_word(String word, String clientName) throws IOException {
+        boolean res = dm.challenge("/Users/shlomo/IdeaProjects/AP/src/resources/words_alpha.txt", word);
+        if (!res) {
+            scoreTable.addScore(clientName, -5);
+        } else {
+            scoreTable.addScore(clientName, 5);
         }
-        else {
-            scoreTable.addScore(clientName,5);
+        GameClient.Request<Boolean> r = new GameClient.Request<>(
+                "checked_word", "boolean", res);
+        r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    private void send_tile(String clientName) throws IOException {
+        Tile t = bag.getRand();
+        playersTiles.get(clientName).add(t);
+        GameClient.Request<Tile> r = new GameClient.Request<>(
+                "sent_tile", "tile", t);
+        r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    private void send_initial_tiles(String clientName) throws IOException {
+        if (!playersTiles.containsKey(clientName)) {
+            List<Tile> t = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                t.add(bag.getRand());
+            }
+            playersTiles.put(clientName, t);
         }
-        GameClient.Request<Boolean> r = new GameClient.Request<>( "checked_word","boolean", res);
+        GameClient.Request<List<Tile>> r = new GameClient.Request<>(
+                "sent_initial_tiles", "tiles", playersTiles.get(clientName));
         r.sendRequest(new ObjectOutputStream(out));
+
     }
 
-    private void send_tile() throws IOException {
-        GameClient.Request<Tile> r = new GameClient.Request<>( "sent_tile","tile", bag.getRand());
-        r.sendRequest(new ObjectOutputStream(out));
-    }
-
-    private void place(Word w,String clientName) throws IOException {
-        int score = board.tryPlaceWord(w,dm);
-        scoreTable.addScore(clientName,score);
+    private void place(Word w, String clientName) throws IOException {
+        int score = board.tryPlaceWord(w, dm);
+        if (score > 0){
+            for (Tile t : w.getTiles()){
+                playersTiles.get(clientName).remove(t);
+            }
+        }
+        scoreTable.addScore(clientName, score);
         System.out.println("Score Table :" + scoreTable.toString());
         System.out.println("Board: " + board.get_as_string());
-        GameClient.Request<Integer> r = new GameClient.Request<>( "score","int", score);
+        GameClient.Request<Integer> r = new GameClient.Request<>("score", "int", score);
         r.sendRequest(new ObjectOutputStream(out));
     }
 
     private void send_board() throws IOException {
         System.out.println("sending board");
-        GameClient.Request<String> r = new GameClient.Request<>( "sent_board","board", board.get_as_string());
+        GameClient.Request<String> r = new GameClient.Request<>(
+                "sent_board", "board", board.get_as_string());
         r.sendRequest(new ObjectOutputStream(out));
+    }
+
+    public void loadBoard(String gameID) {
+        String board_str = getBoardStringFromDB(gameID);
+        HashMap<Tile, Integer> tiles_loc = new HashMap<>();
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++) {
+                char c = board_str.charAt(i * 15 + j);
+                if (c != '_') {
+                    board.tiles[i][j] = bag.getTile(c);
+                    board.isEmpty = false;
+                }
+            }
+        }
+    }
+
+    public void loadScoreBoard(String gameID) {
+        scoreTable.scores = getScoreTableFromDB(gameID);
+    }
+
+    private void loadPlayersTiles(String gameID) {
+        //playersTiles = getPlayersTilesFromDB(gameID);
     }
 
     @Override

@@ -40,6 +40,8 @@ public class GameHost{
         this.handlers = new ConcurrentHashMap<>();
         this.currentPlayerCount = 0;
         this.gameID = gameID;
+        GameClient.Request<String> request = new GameClient.Request<>("load_game_ID", gameID, clientName);
+        request.sendRequest(new ObjectOutputStream(bookServerSocket.getOutputStream()));
     }
 
     public void start() {
