@@ -21,7 +21,7 @@ public class GameClientTest {
         game_src.MyServer s=new game_src.MyServer(getBookPort("src/resources/properties.txt"), new BookScrabbleHandler(),1);
         s.start();
         sleep(1000);
-        GameHost g = new GameHost("src/resources/properties.txt");
+        GameHost g = new GameHost("src/resources/properties.txt","0");
         g.start();
         sleep(1000);
 

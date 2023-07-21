@@ -8,10 +8,14 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.WelcomeController">
    <children>
-      <Label layoutX="99.0" layoutY="74.0" prefHeight="42.0" prefWidth="406.0" text="Welcome " />
-      <Button fx:id="startButton" layoutX="238.0" layoutY="240.0" mnemonicParsing="false" prefHeight="78.0" prefWidth="128.0" text="Start game" textAlignment="CENTER" />
-      <ChoiceBox fx:id="gameTypeChoiceBox" layoutX="218.0" layoutY="176.0" prefHeight="24.0" prefWidth="170.0" />
-      <TextField fx:id="playerNameField" layoutX="217.0" layoutY="134.0" />
-      <Label layoutX="115.0" layoutY="138.0" text="Player name:" />
+      <Label layoutX="97.0" layoutY="41.0" prefHeight="42.0" prefWidth="406.0" text="Welcome " />
+      <Button fx:id="startButton" layoutX="226.0" layoutY="286.0" mnemonicParsing="false" prefHeight="78.0" prefWidth="128.0" text="Start game" textAlignment="CENTER" />
+      <ChoiceBox fx:id="gameTypeChoiceBox" layoutX="205.0" layoutY="233.0" prefHeight="24.0" prefWidth="170.0" />
+      <TextField fx:id="playerNameField" layoutX="215.0" layoutY="95.0" />
+      <TextField fx:id="gameIDField" layoutX="215.0" layoutY="135.0" />
+      <Label layoutX="113.0" layoutY="99.0" text="Player name:" />
+      <Label layoutX="113.0" layoutY="139.0" text="Game ID:" />
+      <TextField fx:id="gamePortField" layoutX="215.0" layoutY="174.0" />
+      <Label layoutX="113.0" layoutY="178.0" text="Game port:" />
    </children>
 </AnchorPane>

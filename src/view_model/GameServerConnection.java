@@ -12,7 +12,7 @@ public class GameServerConnection {
     GameClient gameClient = null;
 
     String name = new String("Player");
-    int nameIndex = 0;
+    String gameID = new String("0");;
 
     ViewModel vm=null;
     public void connectToServer(boolean isNewGame){
@@ -39,6 +39,9 @@ public class GameServerConnection {
     public void setName(String name){
         this.name = name;
     }
+    public void setGameID(String name){
+        this.gameID = name;
+    }
 
     public boolean isGameStart(){
         if(this.gameClient!=null) {
@@ -50,7 +53,7 @@ public class GameServerConnection {
     public void setGameHost() throws IOException, InterruptedException {
         new Thread(() -> {
             try {
-                this.gameHost = new GameHost("src/resources/properties.txt");
+                this.gameHost = new GameHost("src/resources/properties.txt", this.gameID);
                 this.gameHost.start();
                 sleep(1000);
             } catch (Exception e) {e.printStackTrace();}

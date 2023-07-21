@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-
 import game_src.ClientHandler;
-
 import static java.lang.Thread.sleep;
 
 
@@ -31,8 +29,9 @@ public class GameHost{
     private volatile int currentPlayerCount;
     int gameHostPort ;
 
+    String gameID;
 
-    public GameHost(String clientName) throws IOException {
+    public GameHost(String clientName, String gameID) throws IOException {
         this.properties = utils.getProperties("src/resources/properties.txt");
         this.bookServerSocket = getBookServerSocket();
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(MAX_PLAYERS);
@@ -40,6 +39,7 @@ public class GameHost{
         this.hostServerSocket = null;
         this.handlers = new ConcurrentHashMap<>();
         this.currentPlayerCount = 0;
+        this.gameID = gameID;
     }
 
     public void start() {

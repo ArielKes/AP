@@ -21,7 +21,7 @@ public class GameHostTest {
         s.start();
         sleep(1000);
 
-        GameHost g = new GameHost("src/resources/properties.txt");
+        GameHost g = new GameHost("src/resources/properties.txt","0");
         g.start();
         sleep(1000);
 
