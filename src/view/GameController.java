@@ -180,8 +180,6 @@ public class GameController extends Observable implements Observer,Initializable
         compareBoardToModel();
         ArrayList<Integer> arr = getWordCoordinates();
         wordVerifiedDisplay(vm.trySetWord(), arr.get(0), arr.get(1), arr.get(2), arr.get(3));
-        System.out.println(vm.word.get());
-        System.out.println("col: " + vm.col.get() + "row: " + vm.row.get());
         resetChoice();
         updateBoardDisplay();
         updateTilesDisplay();

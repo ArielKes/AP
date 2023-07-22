@@ -137,13 +137,6 @@ public class ViewModel extends Observable implements Observer {
             int smallestCol = Arrays.stream(col_arr).min().getAsInt();
             Tile[] t = buildTilesArr(col_arr, row_arr, word.get().toCharArray());
             Word w = new Word(t  ,smallestRow ,smallestCol ,vertical);
-            for(Tile y : w.getTiles()){
-                if(y!=null)
-                    System.out.print(y.letter);
-                else
-                    System.out.print("_");
-            }
-            System.out.println("");
             int validity = this.model.placeWord(w);
             if(validity > 0)
                 valid = true;
