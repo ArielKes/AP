@@ -62,7 +62,7 @@ public class WelcomeController extends BaseController implements Observer,Initia
                 try {
                     FXMLLoader fxmlLoader = changeScene("waiting.fxml", event);
                     WaitingController wc = fxmlLoader.getController();
-                    wc.setPlayerName(newGame ? "Host" : playerNameField.getText());
+                    wc.setPlayerName(playerNameField.getText());
                     wc.setGameServerConnection(this.gsc);
                     wc.setViewModel(this.gsc.getVM());
                 } catch (IOException e) {

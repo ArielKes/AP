@@ -19,6 +19,8 @@ public class GameServerConnection {
         if(isNewGame) {
             try {
                 setGameHost();
+                Thread.sleep(100);
+                setGameClient(name);
             }catch (Exception e){}
         }
         else {

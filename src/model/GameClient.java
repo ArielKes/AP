@@ -278,7 +278,7 @@ public class GameClient extends Observable implements Model{
             Request serverRespond = utils.getRequestFromInput(hs.getInputStream());
             if (!serverRespond.requestCommand.equals("score")) {
                 System.out.println("error in server respond, expected score got: " + serverRespond.requestCommand);
-                throw new RuntimeException();
+                //throw new RuntimeException();
             }
             if ((int) serverRespond.object > 0) {
                 System.out.println("client on " + Thread.currentThread().getId() + ": place word successfully");
