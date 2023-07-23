@@ -135,6 +135,7 @@ public class BookScrabbleHandler implements ClientHandler {
         HashMap<String, List<Tile>> p = new HashMap<String, List<Tile>>();
         String[] playersTilesArray = playersTilesString.split(";");
         for (String playerTiles : playersTilesArray) {
+            if(playerTiles.equals("")) continue;
             String[] playerTilesArray = playerTiles.split(":");
             String playerName = playerTilesArray[0];
             String[] tilesArray = playerTilesArray[1].split(",");
